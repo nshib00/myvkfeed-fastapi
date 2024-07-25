@@ -18,3 +18,6 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# TODO: сделать post_limit (по умолчанию 1000) - столько постов максимально сможет храниться у юзера.
+# сделать возможным изменять post_limit до 500, 2500, 5000

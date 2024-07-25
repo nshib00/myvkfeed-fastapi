@@ -1,32 +1,32 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 import sys
 from pathlib import Path
 
 
 path = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(path))
-# from vk_old.main_logic import MyVkFeedLogic
-from vk.json_handler import load_posts_from_json, save_posts_to_json
+from app.posts.schemas import PostSchema
+from app.posts.service import PostService
 from vk.posts import load_user_feed
 
 
 router = APIRouter(prefix='/posts', tags=['Посты'])
 
 
-# @router.post('')
-# async def add_new_posts():
-#     pass
-
-
 @router.get('')
-async def get_all_posts():
-    posts = load_posts_from_json()
-    return posts
+async def get_all_posts() -> list[PostSchema]:
+    return await PostService.find_all()
 
+
+@router.post('', status_code=status.HTTP_201_CREATED)
+async def add_all_posts() -> None:
+    posts = await load_user_posts()
+    await PostService.add_posts_list(posts)
+    # TODO если добавляется хотя бы 1 пост/группа, оставить код 201, если ничего не добавляется - изменить на 200
+    
 
 @router.get('/load')
-async def load_posts():
+async def load_user_posts() -> list:
     posts = await load_user_feed()
-    save_posts_to_json(posts)
     return posts
 

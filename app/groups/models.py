@@ -10,7 +10,7 @@ class Groups(Base):
     source_id = Column(Integer, nullable=False, unique=True)
     title = Column(String, nullable=False)
     is_hidden = Column(Boolean, default=False)
-    group_image = relationship('GroupImages', back_populates='group', uselist=False)
+    group_image = relationship('GroupImages', back_populates='group', uselist=False, lazy='joined')
 
 
     def __repr__(self):

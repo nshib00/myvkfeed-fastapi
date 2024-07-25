@@ -17,11 +17,11 @@ class PostImages(Base, BaseImages):
     __tablename__ = 'post_images'
 
     post_id = Column(ForeignKey('posts.id'))
-    post = relationship('Posts', back_populates='images')
+    post = relationship('Posts', back_populates='images', lazy='joined')
 
 
 class GroupImages(Base, BaseImages):
     __tablename__ = 'group_images'
 
-    group = relationship('Groups', back_populates='group_image')
+    group = relationship('Groups', back_populates='group_image', lazy='joined')
     group_id = Column(ForeignKey('groups.id'))
