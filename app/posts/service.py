@@ -1,10 +1,7 @@
 from sqlalchemy import select
-from sqlalchemy.exc import MultipleResultsFound
 
-from app.exceptions import MultipleResultException
 from app.posts.dto import PostDTO
 from app.posts.models import Posts
-from app.groups.models import Groups
 from app.service.base import BaseService
 from app.database import async_sessionmaker
 

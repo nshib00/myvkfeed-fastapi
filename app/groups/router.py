@@ -13,18 +13,18 @@ sys.path.insert(0, str(path))
 router = APIRouter(prefix='/groups', tags=['Группы ВК'])
 
 
+@router.get('')
+async def get_all_groups() -> list:
+    return await GroupService.find_all()
+
+
 @router.post('', status_code=201)
-async def add_all_groups(user_id: int):
+async def add_all_groups(user_id: int) -> None:
     groups = await load_user_groups(user_id=user_id)
     await GroupService.add_groups_list(groups)
         
 
 @router.get('/load')
-async def get_user_groups(user_id: int) -> list:
+async def load_user_groups_from_vk(user_id: int) -> list[dict]:
     groups = await load_user_groups(user_id=user_id)
     return groups
-
-
-@router.get('')
-async def get_saved_user_groups():
-    return await GroupService.find_all()
