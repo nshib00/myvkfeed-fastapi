@@ -2,6 +2,7 @@ from fastapi import APIRouter
 import sys
 from pathlib import Path
 
+from app.groups.schemas import GroupSchema
 from app.groups.service import GroupService
 from vk.groups import load_user_groups
 
@@ -14,7 +15,7 @@ router = APIRouter(prefix='/groups', tags=['Группы ВК'])
 
 
 @router.get('')
-async def get_all_groups() -> list:
+async def get_all_groups() -> list[GroupSchema]:
     return await GroupService.find_all()
 
 

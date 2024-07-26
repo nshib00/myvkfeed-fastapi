@@ -1,6 +1,5 @@
 from sqlalchemy import select
 
-from app.posts.dto import PostDTO
 from app.posts.models import Posts
 from app.service.base import BaseService
 from app.database import async_sessionmaker

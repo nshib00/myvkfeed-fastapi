@@ -2,8 +2,6 @@ from fastapi import APIRouter, Response, status
 import sys
 from pathlib import Path
 
-from fastapi.responses import JSONResponse
-
 from app.posts.dto import PostDTO
 
 
