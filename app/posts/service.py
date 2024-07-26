@@ -9,20 +9,21 @@ from app.database import async_sessionmaker
 class PostService(BaseService):
     model = Posts
 
+
     @classmethod
-    async def add_posts_if_not_exist(cls, posts: list[Posts]) -> None:
+    async def find_non_existing_posts(cls, posts_list: list[Posts]) -> list[Posts]:
         non_existing_posts = []
         async with async_sessionmaker() as session:
-            for post in posts:
+            for post in posts_list:
                 post_query = select(Posts).where(Posts.vk_id == post.vk_id)
                 post_from_db = await session.execute(post_query)
                 if post_from_db.one_or_none() is None:
                     non_existing_posts.append(post)
-            session.add_all(non_existing_posts)
-            await session.commit()
+        return non_existing_posts
     
 
     @classmethod
-    async def add_posts_list(cls, posts: list) -> None:
-        post_models = await PostDTO.raw_posts_to_models_list(posts)
-        await cls.add_posts_if_not_exist(post_models)
+    async def add_posts_list(cls, posts_list: list[Posts]) -> None:
+        async with async_sessionmaker() as session:
+            session.add_all(posts_list)
+            await session.commit()

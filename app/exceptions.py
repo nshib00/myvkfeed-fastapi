@@ -9,6 +9,16 @@ class BaseHTTPException(HTTPException):
         super().__init__(status_code=self.status_code, detail=self.detail)
 
 
+class BaseNotFoundException(BaseHTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+
+
+class PostNotExistsException(BaseNotFoundException):
+    detail = 'Post not exists.'
+
+
 class MultipleResultException(BaseHTTPException):
     status_code = status.HTTP_409_CONFLICT
     detail = 'Conflict: got multiple results.'
+
+
