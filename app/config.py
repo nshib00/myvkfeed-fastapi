@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PWD: str
     VK_API_TOKEN: str
+    SECRET_KEY: str
+    ALGORITHM: str
 
     class Config:
         env_file = '.env'

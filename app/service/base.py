@@ -1,4 +1,4 @@
-from sqlalchemy import insert, select
+from sqlalchemy import MappingResult, insert, select
 
 from app.database import async_sessionmaker
 
@@ -7,7 +7,7 @@ class BaseService:
     model = None
 
     @classmethod
-    async def __get_mapping_result(cls, **filters):
+    async def __get_mapping_result(cls, **filters) -> MappingResult:
         query = select(cls.model.__table__.columns).filter_by(**filters)
         async with async_sessionmaker() as session:
             result = await session.execute(query)
@@ -29,11 +29,12 @@ class BaseService:
         return result_mappings.one_or_none()
         
     @classmethod
-    async def add(cls, **data):
-        query = insert(cls.model).values(**data)
+    async def add(cls, **data) -> int:
+        query = insert(cls.model).values(**data).returning(cls.model.id)
         async with async_sessionmaker() as session:
-            await session.execute(query)
+            result = await session.execute(query)
             await session.commit()
+        return result.scalar()
 
 
     

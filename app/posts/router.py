@@ -2,14 +2,15 @@ from fastapi import APIRouter, Response, status
 import sys
 from pathlib import Path
 
-from app.posts.dto import PostDTO
-
 
 path = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(path))
+
+from app.posts.dto import PostDTO
 from app.exceptions import PostNotExistsException
 from app.posts.schemas import PostSchema
 from app.posts.service import PostService
+
 from vk.posts import load_user_feed
 
 
@@ -42,7 +43,7 @@ async def add_all_posts(response: Response) -> None:
     
     
 @router.get('/load')
-async def load_user_posts_from_vk() -> list:
+async def load_user_posts_from_vk() -> list[dict]:
     posts = await load_user_feed()
     return posts
 

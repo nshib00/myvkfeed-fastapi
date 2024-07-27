@@ -13,12 +13,25 @@ class BaseNotFoundException(BaseHTTPException):
     status_code = status.HTTP_404_NOT_FOUND
 
 
+class BaseBadRequestException(BaseHTTPException):
+    status_code = status.HTTP_400_BAD_REQUEST
+
+
+class UserNotAuthenticatedException(BaseHTTPException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    detail = 'User is not authenticated.'
+
+
+class IncorrectCredentialsException(BaseBadRequestException):
+    detail = 'Given login or password is invalid.'
+
+
 class PostNotExistsException(BaseNotFoundException):
     detail = 'Post not exists.'
 
 
-class MultipleResultException(BaseHTTPException):
+class UserAlreadyExistsException(BaseHTTPException):
     status_code = status.HTTP_409_CONFLICT
-    detail = 'Conflict: got multiple results.'
+    detail = 'User with such VK ID is already registered.'
 
 
