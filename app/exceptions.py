@@ -4,9 +4,10 @@ from fastapi import status, HTTPException
 class BaseHTTPException(HTTPException):
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     detail = ''
+    headers = {}
 
     def __init__(self):
-        super().__init__(status_code=self.status_code, detail=self.detail)
+        super().__init__(status_code=self.status_code, detail=self.detail, headers=self.headers)
 
 
 class BaseNotFoundException(BaseHTTPException):
@@ -17,9 +18,27 @@ class BaseBadRequestException(BaseHTTPException):
     status_code = status.HTTP_400_BAD_REQUEST
 
 
-class UserNotAuthenticatedException(BaseHTTPException):
+class BaseUnauthorizedException(BaseHTTPException):
     status_code = status.HTTP_401_UNAUTHORIZED
+    headers = {'WWW-Authenticate': 'Bearer'}
+
+
+class ForbiddenException(BaseHTTPException):
+    status_code = status.HTTP_403_FORBIDDEN
+    detail = 'Insufficient rights.'
+
+
+class InvalidTokenException(BaseUnauthorizedException):
+    detail = 'Token is invalid.'
+
+
+class UserNotAuthenticatedException(BaseUnauthorizedException):
     detail = 'User is not authenticated.'
+
+
+class UserNotActiveException(BaseUnauthorizedException):
+    detail = 'User is not active. Please, sign in again.'
+
 
 
 class IncorrectCredentialsException(BaseBadRequestException):
@@ -28,6 +47,10 @@ class IncorrectCredentialsException(BaseBadRequestException):
 
 class PostNotExistsException(BaseNotFoundException):
     detail = 'Post not exists.'
+
+
+class UserNotExistsException(BaseNotFoundException):
+    detail = 'User with given data not exists.'
 
 
 class UserAlreadyExistsException(BaseHTTPException):

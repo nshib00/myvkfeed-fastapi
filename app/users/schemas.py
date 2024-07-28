@@ -12,9 +12,13 @@ class UserRegisterSchema(UserLoginSchema):
     vk_shortname: str
 
 
-class UserResponseSchema(BaseModel):
+class ShortUserResponseSchema(BaseModel):
     id: int
     name: str
     vk_shortname: str
+
+
+class UserResponseSchema(ShortUserResponseSchema):
     date_joined: datetime
     is_active: bool
+    is_admin: bool

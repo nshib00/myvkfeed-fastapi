@@ -2,6 +2,7 @@ from fastapi import FastAPI
 import uvicorn
 
 from users.router import router as users_router
+from users.auth.router import router as auth_router
 from posts.router import router as posts_router
 from groups.router import router as groups_router
 from images.router import router as images_router
@@ -9,7 +10,7 @@ from images.router import router as images_router
 
 app = FastAPI()
 
-for router in (users_router, posts_router, groups_router, images_router):
+for router in (users_router, posts_router, groups_router, images_router, auth_router):
     app.include_router(router)
 
 
