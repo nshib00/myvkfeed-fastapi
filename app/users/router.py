@@ -10,6 +10,7 @@ from app.users.auth.dependencies import get_active_current_user, get_admin
 from app.users.models import Users
 from app.users.schemas import ShortUserResponseSchema, UserResponseSchema
 from app.users.service import UserService
+from app.exceptions import UserNotExistsException
 
 
 router = APIRouter(prefix='/users', tags=['Пользователи'])
@@ -26,14 +27,18 @@ async def get_all_users(admin: Users = Depends(get_admin)) -> list[UserResponseS
 
 
 @router.patch('/activate/{username}')
-async def activate_user(username: str) -> None:
+async def activate_user(username: str, admin: Users = Depends(get_admin)) -> None:
     activated_user_id = await UserService.update(username, is_active=True)
+    if activated_user_id is None:
+        raise UserNotExistsException
     return {'activated_user_id': activated_user_id}
 
 
-@router.patch('/disable/{user_id}')
-async def disable_user(username: str) -> None:
+@router.patch('/disable/{username}')
+async def disable_user(username: str, admin: Users = Depends(get_admin)) -> None:
     disabled_user_id = await UserService.update(username, is_active=False)
+    if disabled_user_id is None:
+        raise UserNotExistsException
     return {'disabled_user_id': disabled_user_id}
 
 
