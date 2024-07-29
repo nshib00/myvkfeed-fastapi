@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends, Response, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Response, status
 
 from app.exceptions import UserAlreadyExistsException, UserNotAuthenticatedException
 from app.users.auth.logic import authenticate_user, create_access_token
 from app.users.auth.password import HashPassword
-from app.users.schemas import UserRegisterSchema
+from app.users.schemas import UserLoginSchema, UserRegisterSchema
 from app.users.service import UserService
 
 
@@ -27,8 +26,8 @@ async def register_user(user_data: UserRegisterSchema) -> dict[str, int]:
 
 
 @router.post('/login')
-async def login_user(response: Response, user_data: OAuth2PasswordRequestForm = Depends()) -> None:
-    user = await authenticate_user(username=user_data.username, password=user_data.password)
+async def login_user(response: Response, user_data: UserLoginSchema) -> None:
+    user = await authenticate_user(username=user_data.name, password=user_data.password)
     if user is None:
         raise UserNotAuthenticatedException
     access_token = create_access_token(data={'sub': user.id})

@@ -11,7 +11,7 @@ from app.users.service import UserService
 
 def create_access_token(data: dict) -> str:
     data_to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=30)
     data_to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(data_to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt

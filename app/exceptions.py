@@ -40,6 +40,13 @@ class UserNotActiveException(BaseUnauthorizedException):
     detail = 'User is not active. Please, sign in again.'
 
 
+class TokenExpiredException(BaseUnauthorizedException):
+    detail = 'Token is expired.'
+
+
+class InvalidTokenDataException(BaseUnauthorizedException):
+    detail = 'Token data is invalid.'
+
 
 class IncorrectCredentialsException(BaseBadRequestException):
     detail = 'Given login or password is invalid.'
