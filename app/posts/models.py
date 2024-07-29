@@ -11,8 +11,8 @@ class Posts(Base):
     vk_id = Column(Integer, nullable=False, unique=True)
     text = Column(Text)
     images = relationship('PostImages', back_populates='post', lazy='selectin')
-    group = relationship('Groups', back_populates='posts', lazy='joined')
+    group = relationship('Groups', back_populates='posts', uselist=False, lazy='joined')
     group_id = Column(Integer, ForeignKey('groups.id'))
 
     def __repr__(self):
-        return f'Post #{self.id}'
+        return f'<Post #{self.id}>'

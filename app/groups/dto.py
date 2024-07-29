@@ -1,3 +1,4 @@
+from sqlalchemy import RowMapping
 from app.groups.models import Groups
 from app.images.models import GroupImages
 
@@ -21,6 +22,7 @@ class GroupDTO:
             group_model = await cls.group_dict_to_model(group_dict=group, user_id=user_id)
             group_models.append(group_model)
         return group_models
+
 
 
     

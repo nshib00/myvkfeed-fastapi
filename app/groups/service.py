@@ -30,6 +30,6 @@ class GroupService(BaseService):
 
     @classmethod
     async def get_group_by_source_id(cls, source_id: int) -> Groups | None:
-        group = await cls.find_one_or_none(source_id=source_id)
+        group = await cls.find_one_or_none(mode='scalars', source_id=source_id)
         return group
     

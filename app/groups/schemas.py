@@ -6,3 +6,4 @@ class GroupSchema(BaseModel):
     source_id: int
     title: str
     is_hidden: bool
+    user_id: int

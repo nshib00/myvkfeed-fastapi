@@ -1,4 +1,5 @@
 from datetime import datetime
+from sqlalchemy.exc import InvalidRequestError
 
 from app.groups.service import GroupService
 from app.images.models import PostImages
@@ -16,9 +17,13 @@ class PostDTO:
             text=post_dict['text'],
         )
         post_model.images = await cls.get_images_from_post_dict(post_dict)
-        post_model.group = await GroupService.get_group_by_source_id(
+        post_group = await GroupService.get_group_by_source_id(
             source_id=-post_source_id
         )
+        try:
+            post_model.group = post_group 
+        except InvalidRequestError:
+            print(f'Cannot attach group: {post_group}.\nPost text: {post_model.text[:20] + "..."}')
         return post_model
     
 

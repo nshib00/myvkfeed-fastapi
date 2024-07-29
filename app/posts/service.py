@@ -23,6 +23,7 @@ class PostService(BaseService):
 
     @classmethod
     async def add_posts_list(cls, posts_list: list[Posts]) -> None:
-        async with async_sessionmaker() as session:
-            session.add_all(posts_list)
+        async with async_sessionmaker() as session: 
+            for post in posts_list:
+                await session.merge(post) 
             await session.commit()
