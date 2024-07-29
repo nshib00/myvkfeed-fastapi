@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -10,8 +10,9 @@ class Groups(Base):
     source_id = Column(Integer, nullable=False, unique=True)
     title = Column(String, nullable=False)
     is_hidden = Column(Boolean, default=False)
+    user_id = Column(Integer, ForeignKey('users.id'))
     group_image = relationship('GroupImages', back_populates='group', uselist=False, lazy='joined')
-
+    posts = relationship('Posts', back_populates='group', lazy='selectin')
 
     def __repr__(self):
         return f'<Group "{self.title}">'

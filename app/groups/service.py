@@ -23,14 +23,13 @@ class GroupService(BaseService):
         
 
     @classmethod
-    async def add_groups_list(cls, groups: list) -> None:
-        group_models = await GroupDTO.raw_groups_to_models_list(groups)
+    async def add_groups_list(cls, groups: list, user_id: int) -> None:
+        group_models = await GroupDTO.raw_groups_to_models_list(groups, user_id)
         await cls.add_groups_if_not_exist(group_models)
 
 
     @classmethod
-    async def get_group_id_by_source_id(cls, source_id: int) -> int | None:
+    async def get_group_by_source_id(cls, source_id: int) -> Groups | None:
         group = await cls.find_one_or_none(source_id=source_id)
-        if group is not None:
-            return group.id
+        return group
     
