@@ -10,8 +10,18 @@ class Posts(Base):
     pub_date = Column(DateTime, nullable=False)
     vk_id = Column(Integer, nullable=False, unique=True)
     text = Column(Text)
-    images = relationship('PostImages', back_populates='post', lazy='selectin')
-    group = relationship('Groups', back_populates='posts', uselist=False, lazy='joined')
+    images = relationship(
+        'PostImages',
+        back_populates='post',
+        lazy='selectin',
+        cascade='all, delete-orphan',
+    )
+    group = relationship(
+        'Groups',
+        back_populates='posts',
+        uselist=False,
+        lazy='joined',
+    )
     group_id = Column(Integer, ForeignKey('groups.id'))
 
     def __repr__(self):

@@ -9,9 +9,6 @@ class BaseImages:
     id = Column(Integer, primary_key=True)
     url = Column(URLType, nullable=False)
 
-    def __repr__(self):
-        return f'Image #{self.id}'
-
 
 class PostImages(Base, BaseImages):
     __tablename__ = 'post_images'
@@ -19,9 +16,15 @@ class PostImages(Base, BaseImages):
     post_id = Column(ForeignKey('posts.id'))
     post = relationship('Posts', back_populates='images', lazy='joined')
 
+    def __repr__(self):
+        return f'<Post image #{self.id}>'
+
 
 class GroupImages(Base, BaseImages):
     __tablename__ = 'group_images'
 
     group = relationship('Groups', back_populates='group_image', lazy='joined')
     group_id = Column(ForeignKey('groups.id'))
+
+    def __repr__(self):
+        return f'<Group image #{self.id}>'

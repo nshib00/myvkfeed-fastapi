@@ -11,8 +11,19 @@ class Groups(Base):
     title = Column(String, nullable=False)
     is_hidden = Column(Boolean, default=False)
     user_id = Column(Integer, ForeignKey('users.id'))
-    group_image = relationship('GroupImages', back_populates='group', uselist=False, lazy='joined')
-    posts = relationship('Posts', back_populates='group', lazy='selectin')
+    group_image = relationship(
+        'GroupImages',
+        back_populates='group',
+        uselist=False,
+        lazy='joined',
+        cascade='all, delete-orphan',
+    )
+    posts = relationship(
+        'Posts',
+        back_populates='group',
+        lazy='selectin',
+        cascade='all, delete',
+    )
 
     def __repr__(self):
         return f'<Group "{self.title}">'
