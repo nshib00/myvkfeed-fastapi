@@ -1,6 +1,9 @@
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Depends, Response, status
 import sys
 from pathlib import Path
+
+from app.users.auth.dependencies import get_active_current_user, get_admin
+from app.users.models import Users
 
 
 path = Path(__file__).parent.parent.parent
@@ -18,12 +21,12 @@ router = APIRouter(prefix='/posts', tags=['Посты'])
 
 
 @router.get('')
-async def get_all_posts() -> list[PostSchema]:
+async def get_all_posts(user: Users = Depends(get_active_current_user)) -> list[PostSchema]:
     return await PostService.find_all()
 
 
 @router.get('/{post_id}')
-async def get_post_by_id(post_id: int) -> PostSchema:
+async def get_post_by_id(post_id: int, user: Users = Depends(get_active_current_user)) -> PostSchema:
     post = await PostService.find_by_id(model_id=post_id)
     if post is None:
         raise PostNotExistsException
@@ -31,7 +34,7 @@ async def get_post_by_id(post_id: int) -> PostSchema:
 
 
 @router.post('', status_code=status.HTTP_201_CREATED)
-async def add_all_posts(response: Response) -> None:
+async def add_all_posts(response: Response, user: Users = Depends(get_active_current_user)) -> None:
     posts = await load_user_posts_from_vk()
     post_models = await PostDTO.raw_posts_to_models_list(posts)
     non_existing_posts = await PostService.find_non_existing_posts(posts_list=post_models)
@@ -43,7 +46,11 @@ async def add_all_posts(response: Response) -> None:
     
     
 @router.get('/load')
-async def load_user_posts_from_vk() -> list[dict]:
+async def load_user_posts_from_vk(user: Users = Depends(get_active_current_user)) -> list[dict]:
     posts = await load_user_feed()
     return posts
 
+
+@router.delete('', status_code=204)
+async def delete_all_posts(admin: Users = Depends(get_admin)) -> None:
+    await PostService.delete_all()

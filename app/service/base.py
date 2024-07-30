@@ -1,4 +1,4 @@
-from sqlalchemy import Delete, Insert, MappingResult, Result, Update, insert, select, update
+from sqlalchemy import Delete, Insert, MappingResult, Result, Update, delete, insert, select, text, update
 
 from app.database import async_sessionmaker
 
@@ -70,10 +70,24 @@ class BaseService:
         result = await cls._execute_with_commit(query)
         return result.scalar()
     
+
     @classmethod
     async def update(cls, model, update_condition, **values) -> int:
         query = update(model).where(update_condition).values(**values).returning(model.id)
         result = await cls._execute_with_commit(query)
         return result.scalar()
+    
 
+    @classmethod
+    async def delete(cls, delete_condition=None) -> int:
+        if delete_condition is not None:
+            query = delete(cls.model).where(delete_condition).returning(cls.model.id)
+        result = await cls._execute_with_commit(query)
+        return result.scalar()
+    
+
+    @classmethod
+    async def delete_all(cls) -> None:
+        query = text(f'TRUNCATE TABLE {cls.model.__tablename__} CASCADE')
+        await cls._execute_with_commit(query)
     

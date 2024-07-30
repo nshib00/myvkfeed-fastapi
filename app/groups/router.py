@@ -4,8 +4,9 @@ from pathlib import Path
 
 from app.groups.schemas import GroupSchema
 from app.groups.service import GroupService
-from app.users.auth.dependencies import get_active_current_user
+from app.users.auth.dependencies import get_active_current_user, get_admin
 from app.users.models import Users
+from app.users.service import UserService
 from vk.groups import load_user_groups
 from vk.users import get_vk_user_id_by_shortname
 
@@ -34,3 +35,8 @@ async def load_user_groups_from_vk(user: Users = Depends(get_active_current_user
     vk_user_id: int = await get_vk_user_id_by_shortname(vk_shortname=user.vk_shortname)
     groups = await load_user_groups(user_id=vk_user_id)
     return groups
+
+
+@router.delete('', status_code=204)
+async def delete_all_groups(admin: Users = Depends(get_admin)) -> None:
+    await GroupService.delete_all()
