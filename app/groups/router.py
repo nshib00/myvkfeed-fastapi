@@ -2,9 +2,13 @@ from fastapi import APIRouter, Depends
 import sys
 from pathlib import Path
 
+from fastapi.responses import JSONResponse
+
 from app.exceptions import GroupNotExistsException
+from app.groups.models import Groups
 from app.groups.schemas import GroupSchema, GroupSchemaWithPosts
 from app.groups.service import GroupService
+from app.groups.utils import get_group_ids_from_string
 from app.images.schemas import ImageResponseSchema
 from app.posts.schemas import PostResponseSchemaWithImages
 from app.users.auth.dependencies import get_active_current_user, get_admin
@@ -22,7 +26,7 @@ router = APIRouter(prefix='/groups', tags=['Группы ВК'])
 
 @router.get('')
 async def get_all_groups(user: Users = Depends(get_active_current_user)) -> list[GroupSchema]:
-    return await GroupService.find_all(user_id=user.id)
+    return await GroupService.find_all(order_by_id=True, user_id=user.id, is_hidden=False)
 
 
 @router.get('/{group_id}')
@@ -66,3 +70,23 @@ async def load_user_groups_from_vk(user: Users = Depends(get_active_current_user
 @router.delete('', status_code=204)
 async def delete_all_groups(admin: Users = Depends(get_admin)) -> None:
     await GroupService.delete_all()
+
+
+@router.patch('/hide')
+async def hide_groups_from_feed(groups_to_hide: str, user: Users = Depends(get_active_current_user)) -> JSONResponse:
+    group_ids: list = get_group_ids_from_string(group_ids_str=groups_to_hide)
+    for group_id in group_ids:
+        await GroupService.update(Groups.id == group_id, is_hidden=True)
+    return JSONResponse(
+        {'hidden_group_ids': group_ids}
+    )
+
+
+@router.patch('/show')
+async def show_groups_in_feed(groups_to_show: str, user: Users = Depends(get_active_current_user)) -> JSONResponse:
+    group_ids: list = get_group_ids_from_string(group_ids_str=groups_to_show)
+    for group_id in group_ids:
+        await GroupService.update(Groups.id == group_id, is_hidden=False)
+    return JSONResponse(
+        {'shown_group_id': group_ids}
+    )

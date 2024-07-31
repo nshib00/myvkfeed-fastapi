@@ -15,8 +15,10 @@ class BaseService:
         
 
     @classmethod
-    async def _get_mapping_result(cls, **filters) -> MappingResult:
+    async def _get_mapping_result(cls, order_by_id: bool = False, **filters) -> MappingResult:
         query = select(cls.model.__table__.columns).filter_by(**filters)
+        if order_by_id:
+            query = query.order_by(cls.model.id)
         async with async_sessionmaker() as session:
             result = await session.execute(query)
             return result.mappings()
@@ -42,8 +44,8 @@ class BaseService:
         return result
 
     @classmethod
-    async def find_all(cls, **filters):
-        result_mappings = await cls._get_mapping_result(**filters)
+    async def find_all(cls, order_by_id: bool = False, **filters):
+        result_mappings = await cls._get_mapping_result(order_by_id, **filters)
         return result_mappings.all()
     
     @classmethod

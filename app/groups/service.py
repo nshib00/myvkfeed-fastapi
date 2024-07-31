@@ -11,6 +11,11 @@ class GroupService(BaseService):
 
 
     @classmethod
+    async def update(cls, update_condition, **values) -> int:
+        updated_group_id = await BaseService.update(cls.model, update_condition, **values)
+        return updated_group_id
+
+    @classmethod
     async def add_groups_if_not_exist(cls, groups: list[Groups]) -> None:
         non_existing_groups = []
         async with async_sessionmaker() as session:
