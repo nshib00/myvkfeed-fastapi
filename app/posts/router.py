@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Response, status
 import sys
 from pathlib import Path
 
+from app.groups.service import GroupService
 from app.users.auth.dependencies import get_active_current_user, get_admin
 from app.users.models import Users
 
@@ -10,7 +11,7 @@ path = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(path))
 
 from app.posts.dto import PostDTO
-from app.exceptions import PostNotExistsException
+from app.exceptions import NoGroupsException, PostNotExistsException
 from app.posts.schemas import PostSchema
 from app.posts.service import PostService
 
@@ -35,6 +36,8 @@ async def get_post_by_id(post_id: int, user: Users = Depends(get_active_current_
 
 @router.post('', status_code=status.HTTP_201_CREATED)
 async def add_all_posts(response: Response, user: Users = Depends(get_active_current_user)) -> None:
+    if not await GroupService.find_all():
+        raise NoGroupsException
     posts = await load_user_posts_from_vk()
     post_models = await PostDTO.raw_posts_to_models_list(posts)
     non_existing_posts = await PostService.find_non_existing_posts(posts_list=post_models)

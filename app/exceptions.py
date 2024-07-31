@@ -60,6 +60,14 @@ class UserNotExistsException(BaseNotFoundException):
     detail = 'User with given data not exists.'
 
 
+class GroupNotExistsException(BaseNotFoundException):
+    detail = 'Group not exists.'
+
+
+class NoGroupsException(BaseBadRequestException):
+    detail = 'To load posts, you need to load groups first.'
+
+
 class UserAlreadyExistsException(BaseHTTPException):
     status_code = status.HTTP_409_CONFLICT
     detail = 'User with such VK ID is already registered.'

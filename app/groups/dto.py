@@ -1,4 +1,3 @@
-from sqlalchemy import RowMapping
 from app.groups.models import Groups
 from app.images.models import GroupImages
 

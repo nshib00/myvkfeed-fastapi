@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from app.groups.dto import GroupDTO
 from app.groups.models import Groups
+from app.posts.models import Posts
 from app.service.base import BaseService
 from app.database import async_sessionmaker
 
@@ -33,3 +34,10 @@ class GroupService(BaseService):
         group = await cls.find_one_or_none(mode='scalars', source_id=source_id)
         return group
     
+
+    @classmethod
+    async def get_group_with_posts(cls, group_id: int) -> Groups | None:
+        async with async_sessionmaker() as session:
+            group_query = select(Groups).where(Groups.id == group_id)
+            group_result = await session.execute(group_query)
+            return group_result.scalar()
