@@ -81,11 +81,10 @@ class BaseService:
     
 
     @classmethod
-    async def delete(cls, delete_condition=None) -> int:
+    async def delete(cls, delete_condition=None) -> None:
         if delete_condition is not None:
-            query = delete(cls.model).where(delete_condition).returning(cls.model.id)
-        result = await cls._execute_with_commit(query)
-        return result.scalar()
+            query = delete(cls.model).where(delete_condition)
+        await cls._execute_with_commit(query)
     
 
     @classmethod

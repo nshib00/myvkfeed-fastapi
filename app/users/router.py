@@ -21,6 +21,11 @@ async def get_user_me(user: Users = Depends(get_active_current_user)) -> ShortUs
     return user
 
 
+@router.delete('/me/delete', status_code=204)
+async def delete_user_me(user: Users = Depends(get_active_current_user)) -> None:
+    await UserService.delete(Users.id == user.id)
+
+
 @router.get('/list')
 async def get_all_users(admin: Users = Depends(get_admin)) -> list[UserResponseSchema]:
     return await UserService.find_all()
@@ -40,7 +45,3 @@ async def disable_user(username: str, admin: Users = Depends(get_admin)) -> None
     if disabled_user_id is None:
         raise UserNotExistsException
     return {'disabled_user_id': disabled_user_id}
-
-
-# TODO: сделать посты и группы привязанными к пользователю, так как сейчас после авторизации под другим именем
-# все посты и группы предыдущего пользователя остаются на месте.
