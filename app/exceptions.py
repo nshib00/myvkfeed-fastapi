@@ -64,6 +64,10 @@ class GroupNotExistsException(BaseNotFoundException):
     detail = 'Group not exists.'
 
 
+class GroupNotFoundInUserGroupsException(BaseBadRequestException):
+    detail = 'Incorrect group ID(s): group(s) not found in user groups list.'
+
+
 class NoGroupsException(BaseBadRequestException):
     detail = 'To load posts, you need to load groups first.'
 

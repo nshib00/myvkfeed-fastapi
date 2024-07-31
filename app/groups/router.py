@@ -4,7 +4,7 @@ from pathlib import Path
 
 from fastapi.responses import JSONResponse
 
-from app.exceptions import GroupNotExistsException
+from app.exceptions import GroupNotExistsException, GroupNotFoundInUserGroupsException
 from app.groups.models import Groups
 from app.groups.schemas import GroupSchema, GroupSchemaWithPosts
 from app.groups.service import GroupService
@@ -76,6 +76,11 @@ async def delete_all_groups(admin: Users = Depends(get_admin)) -> None:
 async def hide_groups_from_feed(groups_to_hide: str, user: Users = Depends(get_active_current_user)) -> JSONResponse:
     group_ids: list = get_group_ids_from_string(group_ids_str=groups_to_hide)
     for group_id in group_ids:
+        group_from_db = await GroupService.find_by_id(group_id)
+        if group_from_db is None:
+            raise GroupNotExistsException
+        if group_from_db.user_id != user.id:
+            raise GroupNotFoundInUserGroupsException
         await GroupService.update(Groups.id == group_id, is_hidden=True)
     return JSONResponse(
         {'hidden_group_ids': group_ids}
@@ -86,6 +91,11 @@ async def hide_groups_from_feed(groups_to_hide: str, user: Users = Depends(get_a
 async def show_groups_in_feed(groups_to_show: str, user: Users = Depends(get_active_current_user)) -> JSONResponse:
     group_ids: list = get_group_ids_from_string(group_ids_str=groups_to_show)
     for group_id in group_ids:
+        group_from_db = await GroupService.find_by_id(group_id)
+        if group_from_db is None:
+            raise GroupNotExistsException
+        if group_from_db.user_id != user.id:
+            raise GroupNotFoundInUserGroupsException
         await GroupService.update(Groups.id == group_id, is_hidden=False)
     return JSONResponse(
         {'shown_group_id': group_ids}
