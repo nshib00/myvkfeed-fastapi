@@ -35,7 +35,7 @@ async def get_post_by_id(post_id: int, user: Users = Depends(get_active_current_
 
 
 @router.post('', status_code=status.HTTP_201_CREATED)
-async def add_all_posts(response: Response, user: Users = Depends(get_active_current_user)) -> None:
+async def add_all_posts(response: Response, user: Users = Depends(get_active_current_user)) -> dict[str, int]:
     if not await GroupService.find_all():
         raise NoGroupsException
     posts = await load_user_posts_from_vk()

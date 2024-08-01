@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response, status
 import sys
 from pathlib import Path
 
@@ -53,11 +53,15 @@ async def get_group_by_id(group_id: int, user: Users = Depends(get_active_curren
     )
 
 
-@router.post('', status_code=201)
-async def add_all_groups(user: Users = Depends(get_active_current_user)) -> None:
+@router.post('', status_code=status.HTTP_201_CREATED)
+async def add_all_groups(response: Response, user: Users = Depends(get_active_current_user)) -> dict[str, int]:
     vk_user_id: int = await get_vk_user_id_by_shortname(vk_shortname=user.vk_shortname)
     groups = await load_user_groups(user_id=vk_user_id)
-    await GroupService.add_groups_list(groups, user_id=user.id)
+    if groups:
+        await GroupService.add_groups_list(groups, user_id=user.id)
+    else:
+        response.status_code = status.HTTP_200_OK
+    return {'added_groups_count': len(groups)}
         
 
 @router.get('/load')
@@ -67,7 +71,7 @@ async def load_user_groups_from_vk(user: Users = Depends(get_active_current_user
     return groups
 
 
-@router.delete('', status_code=204)
+@router.delete('', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_all_groups(admin: Users = Depends(get_admin)) -> None:
     await GroupService.delete_all()
 
