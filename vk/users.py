@@ -1,10 +1,10 @@
 from httpx import AsyncClient, Response
 
-from vk.config import vk_settings
+from app.config import settings
 
 
 async def get_vk_user_response(vk_shortname: str) -> Response:
-    vk_request_url = f"https://api.vk.com/method/users.get?&access_token={vk_settings.api_token}&user_ids={vk_shortname}&v=5.199"
+    vk_request_url = f"https://api.vk.com/method/users.get?&access_token={settings.vk.API_TOKEN}&user_ids={vk_shortname}&v=5.199"
     async with AsyncClient() as client:
         response = await client.get(url=vk_request_url)
     return response

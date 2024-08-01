@@ -1,10 +1,10 @@
 from httpx import AsyncClient
 
-from vk.config import vk_settings
+from app.config import settings
 
 
 async def load_user_feed(posts_count: int = 50) -> list:
-    vk_posts_url = f"https://api.vk.com/method/newsfeed.get?&access_token={vk_settings.api_token}&filters=post&count={posts_count}&v=5.131"
+    vk_posts_url = f"https://api.vk.com/method/newsfeed.get?&access_token={settings.vk.API_TOKEN}&filters=post&count={posts_count}&v=5.131"
     async with AsyncClient() as client:
         posts_response = await client.get(url=vk_posts_url)
     posts = posts_response.json()["response"]["items"]

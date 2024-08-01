@@ -21,7 +21,7 @@ def get_token(request: Request) -> str:
 
 async def get_current_user(token: str = Depends(get_token)):
     try:
-        payload: dict = jwt.decode(token, key=settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        payload: dict = jwt.decode(token, key=settings.auth.SECRET_KEY, algorithms=[settings.auth.ALGORITHM])
     except jwt.PyJWTError:
         raise InvalidTokenException
     expire_date: str = payload.get('exp')
