@@ -1,0 +1,37 @@
+{% extends 'main/base.html' %}
+{% load main_tags %}
+
+{% block content %}
+<div class="group-header">
+    <img src="{{ group.image }}" alt="Аватар группы">
+    <h1>{{ group.group_title }}</h1>
+    {% if posts_count != 0 %}
+        <p>Постов: {{ posts_count }}</p>
+    {% else %}
+       <p><br>У группы {{ group.group_title }} нет сохранённых постов.</p>
+        <a href="{% url 'subs' %}">Вернуться в меню групп</a>
+    {% endif %}
+</div>
+<div class="group-posts">
+    {% for post in posts %}
+    <div class="post">
+        <h2>{{ post.title }}</h2>
+        <h3>{{ post.date }}<br><br></h3>
+        <p>{{ post.text|linebreaks|truncatewords:100 }}</p>
+        {% if post.text|length > 100 %}
+        <a class="post-continue-reading-ref" href="{{ post.get_absolute_url }}"><p>читать дальше...</p></a>
+        {% endif %}
+        {% filterimgs post_id=post.pk as images %}
+        {% if post.photo_count != 0 %}
+            <div class="post-imgs">
+                {% for image_obj in images %}
+                    <div class="imgs-container">
+                        <a href="{{ image_obj.image }}"><img src="{{ image_obj.image }}" alt="Картинка #{{ forloop.counter }}"></a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

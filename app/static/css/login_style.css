@@ -1,0 +1,19 @@
+.errors.login-errors {
+    text-align: left;
+}
+
+.form-fields-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-form-field {
+    padding: 0 50% 0;
+    border: none;
+}
+
+.login-form-input {
+    margin-top: 4px;
+}

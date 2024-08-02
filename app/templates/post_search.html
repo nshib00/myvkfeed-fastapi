@@ -1,0 +1,29 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="post-search-form-wrapper">
+    <form action="{% url 'post_search' %}" class="search-form post-search" method='get' id="post-search-form">
+        {% csrf_token %}
+        <p><label for="{{ form.text.id_for_label }}" class="form-label"></label>{{ form.text }}</p>
+        <button type="reset" class="reset-button">Сбросить</button>
+        <p class="searched-posts-count">Найдено постов: {{ posts_count }}</p>
+    </form>
+</div>
+<table class="searched_posts" cellpadding="5" cellspacing="5" border="1">
+    {% for post in posts %}
+    <td class="searched-post-block">
+        <div class="searched-post-title">{{ post.title }}</div>
+        <div class="searched-post-date">{{ post.date }}</div>
+        <div class="searched-post-ref">
+            <a href="{{ post.get_absolute_url }}">
+                {% if post.text %}
+                    <p>{{ post.text|truncatewords:20 }}</p>
+                {% else %}
+                    <p>(ссылка на пост)</p>
+                {% endif %}
+            </a>
+        </div>
+    </td>
+    {% endfor %}
+</table>
+{% endblock %}

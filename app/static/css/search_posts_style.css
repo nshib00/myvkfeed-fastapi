@@ -1,0 +1,10 @@
+.searched-posts, .searched-posts-title, .searched-posts-date, .searched-posts-ref {
+    border: none;
+}
+
+.searched-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+}

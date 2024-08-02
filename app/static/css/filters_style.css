@@ -1,0 +1,29 @@
+.groups-select {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: space-between;
+    padding: 5px 15px 15px;
+}
+
+.groups-select.hidden, .groups-select.visible {
+    border: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px 100px 5px;
+}
+
+.save-button.filters {
+    margin: 10px;
+}
+
+.select-checkbox option::before {
+  content: "\2610";
+  width: 1.3em;
+  text-align: center;
+  display: inline-block;
+}
+.select-checkbox option:checked::before {
+  content: "\2611";
+}
+

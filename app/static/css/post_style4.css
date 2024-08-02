@@ -1,0 +1,50 @@
+div, table {
+    padding: 10px 40px 25px 40px;
+    display: block;
+}
+
+img {
+    border: 0.5px solid #ebebeb;
+    border-radius: 5px;
+    display: block;
+}
+
+.post {
+    padding-bottom: 5px;
+}
+
+.post-continue-reading-ref {
+    text-decoration: underline;
+}
+
+.post-continue-reading-ref:visited {
+    color: #c0c0c0;
+    text-decoration: none;
+}
+
+.post-imgs {
+    display: flex;
+    border: 0.5px solid gray;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.imgs-container {
+    border: none;
+}
+
+h2 {
+    font-weight: bold;
+    font-family: Helvetica;
+    font-size: 23px;
+}
+h3 {
+    font-weight: normal;
+    font-size: 19px;
+
+}
+p {
+    font-weight: lighter;
+    font-size: 16px;
+}

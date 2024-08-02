@@ -1,0 +1,32 @@
+div {
+    border: 1px solid gray;
+    padding: 10px 40px 25px 40px;
+}
+img, table {
+    border: 1px solid #ebebeb;
+    border-radius: 5px;
+    display: block;
+    margin: 0px auto 0px auto;
+}
+
+.imgs-container {
+    display: flex;
+    border: none;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h2 {
+    font-weight: bold;
+    font-family: Helvetica;
+    font-size: 23px;
+}
+h3 {
+    font-weight: normal;
+    font-size: 19px;
+
+}
+p {
+    font-weight: lighter;
+    font-size: 16px;
+}

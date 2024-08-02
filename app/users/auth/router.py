@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Response, status
 
-from app.exceptions import UserAlreadyExistsException, UserNotAuthenticatedException, IncorrectCredentialsException
+from app.exceptions import UserAlreadyExistsException
 from app.users.auth.dependencies import get_active_current_user
 from app.users.auth.logic import authenticate_user, create_and_save_tokens
 from app.users.auth.password_hash import HashPassword

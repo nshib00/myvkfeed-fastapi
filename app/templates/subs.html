@@ -1,0 +1,44 @@
+{% extends 'main/base.html' %}
+{% load main_tags %}
+
+{% block content %}
+    <div class="subs-search-toolbar">
+        <span class="subs-search">
+            <form action="{% url 'subs' %}" class="search-form subs-search" method='get' id="subs-search-form">
+                {% csrf_token %}
+                <p><label for="{{ form.group_title.id_for_label }}" class="form-label"></label>{{ form.group_title }}</p>
+                <button type="reset" class="reset-button">Reset text</button>
+            </form>
+        </span>
+        <span class="reset-search-form">
+            <a href="{% url 'subs' %}"><p>Reset search results</p></a>
+        </span>
+        <span class="subs-sort">
+            <span>Sort groups by:</span>
+        <select name="group-sort-select">
+            <optgroup label="by alphabet:"></optgroup>
+                <option value="asc">by alphabet (asc)</option>
+                <option value="desc">by alphabet (desc)</option>
+            <optgroup label="by posts count:"></optgroup>
+                <option value="asc">by posts count (asc)</option>
+                <option value="desc">by posts count (desc)</option>
+        </select>
+        </span>
+        {% if groups_count != 0 %}
+            <span class="searched-subs-count">
+                <p>Groups found: {{ groups_count }}</p>
+            </span>
+        {% endif %}
+    </div>
+
+    <div class="all-subs" cellpadding="5" cellspacing="5" border="1">
+        {% for group in groups %}
+            {% countposts title=group.group_title as posts_count %}
+            <div class="subs-block">
+                <span><img class="subs-image" src="{{ group.image }}" alt="{{ group.group_title }}"></span>
+                <span><a href="{{ group.get_absolute_url }}"><h3>{{ group.group_title }}</h3></a></span>
+                <p>{{ posts_count }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

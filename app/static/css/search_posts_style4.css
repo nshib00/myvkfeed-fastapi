@@ -1,0 +1,41 @@
+.searched-posts {
+   display: block;
+}
+
+.searched-post-block {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: baseline;
+    align-content: center;
+    margin-bottom: 5px;
+}
+
+.searched-post-title, .searched-post-date, .searched-post-ref {
+    padding: 0 5px 0 5px;
+    border: none;
+}
+
+.searched-post-title {
+    flex: 0 1 30%;
+}
+
+.searched-post-date {
+    flex: 0 1 20%;
+}
+
+.searched-post-ref {
+    color: #b5b5b5;
+    flex: 0 1 50%;
+}
+
+.searched-post-ref:hover {
+    color: #e0e0e0;
+}
+
+.searched-posts-form-wrapper, .post-search {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}

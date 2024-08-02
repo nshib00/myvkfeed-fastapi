@@ -1,0 +1,27 @@
+.all-subs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.subs-block {
+    display: grid;
+    grid-template-columns: 1fr 3fr 2fr;
+    padding: 0 10px 0;
+    align-items: center;
+}
+
+#id_group_title {
+    background-color: #303030;
+    color: #d0d0d0;
+    border: 1px solid #ebebeb;
+    border-radius: 5px;
+    font-family: Gabriola;
+    font-size: 18px;
+}
+
+.subs-search-toolbar {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr;
+    align-items: center;
+    padding: 0 20px 0;
+}

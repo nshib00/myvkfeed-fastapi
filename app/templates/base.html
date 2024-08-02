@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/main.css') }}" type="text/css"/>
+    <link rel="shortcut icon" href="{{ url_for('static', path='/images/favicon.png') }}" type="image/png"/>
+</head>
+<header>
+    <span class="menu-container">
+    <div class="topmenu">
+        {% block menu %}
+            {% for item in menu %}
+                {% if forloop.first %}
+                    <div class="logo" valign="top">
+                        <a class="home-ref" href=""></a>
+                    </div>
+                {% else %}
+                    <span class="topmenu-item" valign="top">
+                        <a class="topmenu-item-ref" href="">{{ item.title }}</a>
+                    </span>
+                {% endif %}
+            {% endfor %}
+    </div>
+        <div class="login" valign="top">
+            <p><a class="login-ref" href="">Выйти</a></p>
+        </div>
+        <div class="login" valign="top">
+            <a class="login-ref" href="">Войти</a>
+        </div>
+    {% endblock menu %}
+    </div>
+    </span>
+</header>
+<body>
+    {% block content %}
+    {% endblock content %}
+
+    {% block pagination %}
+    {% endblock %}
+</body>
+{% block footer %}
+{% endblock %}
+
+{% block app_info %}
+<div class="app-name">
+    <p>MyVkFeed v{{ version }} by nshib<br>{{ year }}</br>
+</div>
+{% endblock %}
+</html>

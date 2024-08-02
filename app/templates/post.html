@@ -1,0 +1,20 @@
+{% extends 'main\base.html' %}
+{% load main_tags %}
+
+{% block content %}
+   <div class="post">
+    <h2>{{ post.title }}</h2>
+    <h3>{{ post.date }}</h3>
+    <p>{{ post.text|linebreaks }}</p>
+    {% filterimgs post_id=post.get_post_id as images %}
+    {% if post.photo_count != 0 %}
+       <div class="post-imgs">
+           {% for image_obj in images %}
+               <div class="imgs-container">
+                   <img src="{{ image_obj.image }}" alt="Картинка #{{ forloop.counter }}">
+               </div>
+           {% endfor %}
+       </div>
+       {% endif %}
+    </div>
+{% endblock %}

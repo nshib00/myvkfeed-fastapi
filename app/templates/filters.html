@@ -1,0 +1,62 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load main_tags %}
+
+{% block content %}
+
+{% if errors %}
+    <div id="filter-errors" class="errors">
+        <p>Укажите группу (или несколько), которую(ые) необходимо скрыть из ленты/возвратить в неё.</p>
+    </div>
+{% endif %}
+{% if filter_message %}
+    <div id="filter-message" class="success-message">
+        <p>{{ filter_message }}</p>
+    </div>
+{% endif %}
+
+<div class="groups-select">
+    <form name="visible-groups-form" method="post">
+        {% csrf_token %}
+        <div class="groups-select hidden">
+            {% if form.is_hidden.errors %}
+                <div class="errors">{{ form.is_hidden.errors }}</div>
+            {% endif %}
+            <p>Скрытые группы:</p>
+            <select class="select-checkbox" name="groups-to-show-select[]" multiple="multiple" size="10">
+                {% for group in groups %}
+                    {% if group.is_hidden %}
+                        <option value="{{ group.group_title }}">{{ group.group_title }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <button type="submit" id="visible-groups-save" class="save-button filters" value="OK">Сделать выбранные группы видимыми</button>
+        </div>
+    </form>
+
+    <form name="hidden-groups-form" method="post">
+        {% csrf_token %}
+        <div class="groups-select visible">
+            {% if form.is_hidden.errors %}
+                <div class="errors">{{ form.is_hidden.errors }}</div>
+            {% endif %}
+            <p>Выберите группы, которые хотите скрыть:</p>
+            <select class="select-checkbox" name="groups-to-hide-select[]" multiple="multiple" size="10">
+                    {% for group in groups %}
+                        {% if not group.is_hidden %}
+                            <option value="{{ group.group_title }}">{{ group.group_title }}</option>
+                        {% endif %}
+                    {% endfor %}
+            </select>
+            <button type="submit" id="hidden-groups-save" class="save-button filters" value="OK">Скрыть выбранные группы</button>
+        </div>
+    </form>
+</div>
+
+<div class="return-home">
+    <a href="{% url 'home' %}">Вернуться на главную страницу</a>
+</div>
+
+<script type="text/javascript" src="{% static 'main/js/scripts.js' %}"></script>
+
+{% endblock %}

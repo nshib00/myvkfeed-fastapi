@@ -1,0 +1,17 @@
+.start-page-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: Gabriola;
+    font-size: 30px;
+}
+
+#start-page-header {
+    font-size: 70px;
+}
+
+.start-page-refs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
