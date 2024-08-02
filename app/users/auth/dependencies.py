@@ -5,8 +5,9 @@ import jwt
 from app.config import settings
 from app.exceptions import (
     ForbiddenException, InvalidTokenDataException, InvalidTokenException, TokenExpiredException, UserNotActiveException, UserNotExistsException,
-    UserNotAuthenticatedException
+    UserNotAuthenticatedException, InvalidTokenTypeException
 ) 
+from app.users.auth.tokens.token_info import ACCESS_TOKEN_TYPE
 from app.users.models import Users
 from app.users.service import UserService
 
@@ -18,12 +19,14 @@ def get_token(request: Request) -> str:
     return token
 
 
-
 async def get_current_user(token: str = Depends(get_token)):
     try:
         payload: dict = jwt.decode(token, key=settings.auth.SECRET_KEY, algorithms=[settings.auth.ALGORITHM])
     except jwt.PyJWTError:
         raise InvalidTokenException
+    token_type: str = payload.get('type')
+    if token_type != ACCESS_TOKEN_TYPE:
+        raise InvalidTokenTypeException
     expire_date: str = payload.get('exp')
     if not expire_date or int(expire_date) < int(time.time()):
         raise TokenExpiredException

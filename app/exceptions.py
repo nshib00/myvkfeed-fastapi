@@ -1,5 +1,7 @@
 from fastapi import status, HTTPException
 
+from app.users.auth.tokens.token_info import ACCESS_TOKEN_TYPE
+
 
 class BaseHTTPException(HTTPException):
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -42,6 +44,10 @@ class UserNotActiveException(BaseUnauthorizedException):
 
 class TokenExpiredException(BaseUnauthorizedException):
     detail = 'Token is expired.'
+
+
+class InvalidTokenTypeException(BaseUnauthorizedException):
+    detail = f'Invalid token type (expected {ACCESS_TOKEN_TYPE!r}.)'
 
 
 class InvalidTokenDataException(BaseUnauthorizedException):

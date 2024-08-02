@@ -12,6 +12,8 @@ from app.groups.models import Groups
 from app.images.models import PostImages, GroupImages
 from app.posts.models import Posts
 from app.users.models import Users
+from app.users.auth.tokens.models import RefreshTokens
+
 from app.config import settings
 
 

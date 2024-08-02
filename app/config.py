@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from enum import IntEnum
 
@@ -15,13 +15,6 @@ class VKSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix='VK_')
 
     API_TOKEN: str
-
-
-class AuthSettings(BaseSettings):
-    SECRET_KEY: str
-    ALGORITHM: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 60
     
 
 class DBSettings(BaseSettings):
@@ -38,9 +31,15 @@ class DBSettings(BaseSettings):
         return f'postgresql+asyncpg://{self.USER}:{self.PWD}@{self.HOST}:{self.PORT}/{self.NAME}'
 
 
-class AppSettings(BaseModel):
+class AppSettings(BaseSettings):
     posts_limit: IntEnum = PostLimit.MEDIUM
 
+
+class AuthSettings(BaseSettings):
+    SECRET_KEY: str | None = None
+    ALGORITHM: str | None = None
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 60
 
 
 class Settings(BaseSettings):
@@ -50,7 +49,7 @@ class Settings(BaseSettings):
     app: AppSettings = AppSettings()
     
     class Config:
-        env_file = '.env'
+        env_file = '../.env'
 
 
 settings = Settings()

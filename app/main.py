@@ -16,3 +16,4 @@ for router in (users_router, posts_router, groups_router, images_router, auth_ro
 
 if __name__ == '__main__':
     uvicorn.run('main:app', port=12500, reload=True)
+ 
