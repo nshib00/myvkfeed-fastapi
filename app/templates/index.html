@@ -11,16 +11,16 @@
                     {% else %}
                      {% for post in posts %}
                        <div class="col-md-6 infinite-item">
-                        <h2>Group #{{ post.group_id }}</h2>
-                        <h3>{{ post.pub_date }}</h3>
-                        {% if post.text|length == 10000 %}
-                           <a class="post-continue-reading-ref" href="{{ post.get_absolute_url }}"><p>читать дальше...</p></a>
+                        <h2>{{ post.group_title }}</h2>
+                        <h3>{{ post.pub_date.strftime('%d.%m.%Y %H:%M') }}</h3>
+                        {% if post.text|length > 1000 %}
+                            <p>{{ post.text|truncate(1000) }}</p>
+                           <a class="post-continue-reading-ref" href="/pages/post/{{ post.id }}"><p>читать дальше...</p></a>
                         {% else %}
                             <p>{{ post.text }}</p>
                         {% endif %}
                             <div class="post-imgs">
                                 {% for image in post.images %}
-                                    {{ image.url }}
                                     <div class="imgs-container">
                                         <a href="{{ image.url }}"><img src="{{ image.url }}" alt="Картинка #{{ image.id }}"></a>
                                     </div>

@@ -4,21 +4,21 @@ from pathlib import Path
 
 from fastapi.responses import JSONResponse
 
-from app.exceptions import GroupNotExistsException, GroupNotFoundInUserGroupsException
-from app.groups.models import Groups
-from app.groups.schemas import GroupSchema, GroupSchemaWithPosts
-from app.groups.service import GroupService
-from app.groups.utils import get_group_ids_from_string
-from app.images.schemas import ImageResponseSchema
-from app.posts.schemas import PostResponseSchemaWithImages
-from app.users.auth.dependencies import get_active_current_user, get_admin
-from app.users.models import Users
 from vk.groups import load_user_groups
 from vk.users import get_vk_user_id_by_shortname
 
 
 path = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(path))
+
+from app.exceptions import GroupNotExistsException, GroupNotFoundInUserGroupsException
+from app.groups.models import Groups
+from app.groups.schemas import GroupSchema, GroupSchemaWithPosts
+from app.groups.service import GroupService
+from app.groups.utils import get_group_ids_from_string
+from app.groups.dto import GroupDTO
+from app.users.auth.dependencies import get_active_current_user, get_admin
+from app.users.models import Users
 
 
 router = APIRouter(prefix='/groups', tags=['Группы ВК'])
@@ -34,23 +34,7 @@ async def get_group_by_id(group_id: int, user: Users = Depends(get_active_curren
     group = await GroupService.get_group_with_posts(group_id)
     if group is None:
         raise GroupNotExistsException
-    return GroupSchemaWithPosts(
-        id=group.id,
-        title=group.title,
-        source_id=group.source_id,
-        is_hidden=group.is_hidden,
-        user_id=group.user_id,
-        posts=[
-            PostResponseSchemaWithImages(
-                id=post.id,
-                pub_date=post.pub_date,
-                text=post.text,
-                images=[
-                    ImageResponseSchema(url=img.url) for img in post.images
-                ]
-             ) for post in group.posts
-        ],
-    )
+    return GroupDTO.model_to_schema(group_model=group)
 
 
 @router.post('', status_code=status.HTTP_201_CREATED)

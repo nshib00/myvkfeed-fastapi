@@ -1,4 +1,5 @@
 import datetime
+from typing import Any
 from pydantic import BaseModel
 
 
@@ -15,4 +16,11 @@ class PostResponseSchemaWithImages(PostResponseSchema):
 class PostSchema(PostResponseSchema):
     vk_id: int
     group_id: int | None
+
+
+class PostResponseRenderSchema(PostResponseSchemaWithImages):
+    group_title: str | None
+
+
+
     

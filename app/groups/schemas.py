@@ -1,7 +1,4 @@
-from typing import Any
 from pydantic import BaseModel
-
-from app.posts.models import Posts
 
 
 class GroupSchema(BaseModel):

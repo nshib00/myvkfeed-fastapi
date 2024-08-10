@@ -30,7 +30,7 @@ class GroupService(BaseService):
 
     @classmethod
     async def add_groups_list(cls, groups: list, user_id: int) -> None:
-        group_models = await GroupDTO.raw_groups_to_models_list(groups, user_id)
+        group_models = GroupDTO.raw_groups_to_models_list(groups, user_id)
         await cls.add_groups_if_not_exist(group_models)
 
 

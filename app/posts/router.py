@@ -12,7 +12,7 @@ sys.path.insert(0, str(path))
 
 from app.posts.dto import PostDTO
 from app.exceptions import NoGroupsException, PostNotExistsException
-from app.posts.schemas import PostSchema
+from app.posts.schemas import PostSchema, PostResponseSchemaWithImages, PostResponseRenderSchema
 from app.posts.service import PostService
 
 from vk.posts import load_user_feed
@@ -21,17 +21,23 @@ from vk.posts import load_user_feed
 router = APIRouter(prefix='/posts', tags=['Посты'])
 
 
-@router.get('')
+@router.get('/all')
 async def get_all_posts(user: Users = Depends(get_active_current_user)) -> list[PostSchema]:
     return await PostService.find_all()
 
 
+@router.get('/all_with_related')
+async def get_all_posts_with_related_data(user: Users = Depends(get_active_current_user)) -> list[PostResponseRenderSchema]:
+    post_models = await PostService.get_posts_with_group_and_images()
+    return PostDTO.many_models_to_schemas(post_models, with_group_title=True)
+
+
 @router.get('/{post_id}')
-async def get_post_by_id(post_id: int, user: Users = Depends(get_active_current_user)) -> PostSchema:
-    post = await PostService.find_by_id(model_id=post_id)
+async def get_post_by_id(post_id: int, user: Users = Depends(get_active_current_user)) -> PostResponseRenderSchema:
+    post = await PostService.get_post_with_images(post_id=post_id)
     if post is None:
         raise PostNotExistsException
-    return post
+    return PostDTO.one_model_to_schema(post_model=post, with_group_title=True)
 
 
 @router.post('', status_code=status.HTTP_201_CREATED)

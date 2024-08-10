@@ -4,6 +4,8 @@ from sqlalchemy.exc import InvalidRequestError
 from app.groups.service import GroupService
 from app.images.models import PostImages
 from app.posts.models import Posts
+from app.posts.schemas import PostResponseRenderSchema, PostResponseSchemaWithImages
+from app.images.schemas import ImageResponseSchema
 
 
 class PostDTO:
@@ -16,7 +18,7 @@ class PostDTO:
             vk_id=post_dict['id'],
             text=post_dict['text'],
         )
-        post_model.images = await cls.get_images_from_post_dict(post_dict)
+        post_model.images = cls.get_images_from_post_dict(post_dict)
         post_group = await GroupService.get_group_by_source_id(
             source_id=-post_source_id
         )
@@ -28,7 +30,7 @@ class PostDTO:
     
 
     @classmethod
-    async def get_images_from_post_dict(cls, post_dict: dict) -> list[PostImages]:
+    def get_images_from_post_dict(cls, post_dict: dict) -> list[PostImages]:
         post_images = []
 
         for attachment in post_dict.get('attachments'):
@@ -48,3 +50,26 @@ class PostDTO:
             post_model = await cls.post_dict_to_model(post_dict=post)
             post_models.append(post_model)
         return post_models
+
+
+    @classmethod
+    def one_model_to_schema(cls, post_model: Posts, with_group_title=False) -> PostResponseRenderSchema:
+        post_schema = PostResponseRenderSchema(
+            id=post_model.id,
+            pub_date=post_model.pub_date,
+            text=post_model.text,
+            group_id=post_model.group_id,
+            images=[
+                ImageResponseSchema(url=img.url) for img in post_model.images
+            ],
+            group_title=None
+        )
+        if with_group_title:
+            post_schema.group_title = post_model.group.title
+        return post_schema
+    
+    @classmethod
+    def many_models_to_schemas(cls, post_models: list[Posts], with_group_title=False) -> list[PostResponseRenderSchema]:
+        return [
+            cls.one_model_to_schema(post_model, with_group_title=with_group_title) for post_model in post_models
+        ]
