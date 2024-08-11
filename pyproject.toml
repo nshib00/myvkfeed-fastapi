@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "myvkfeed-fastapi"
-version = "0.16.1"
+version = "0.17.0"
 description = "Web app for reading the feed from VK without any ads."
 authors = ["nshib <nshib54321@gmail.com>"]
 readme = "README.md"
