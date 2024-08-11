@@ -1,32 +1,29 @@
-{% extends 'main/base.html' %}
-{% load main_tags %}
+{% extends 'base.html' %}
 
 {% block content %}
 <div class="group-header">
-    <img src="{{ group.image }}" alt="Аватар группы">
-    <h1>{{ group.group_title }}</h1>
-    {% if posts_count != 0 %}
-        <p>Постов: {{ posts_count }}</p>
+    <img src="{{ group.image.url }}" alt="Аватар группы {{ group.title }}">
+    <h1>{{ group.title }}</h1>
+    {% if group.posts|length != 0 %}
+        <p>Постов: {{ group.posts|length }}</p>
     {% else %}
-       <p><br>У группы {{ group.group_title }} нет сохранённых постов.</p>
-        <a href="{% url 'subs' %}">Вернуться в меню групп</a>
+       <p><br>У группы {{ group.title }} нет сохранённых постов.</p>
+        <a href="/pages/groups">Вернуться в меню групп</a>
     {% endif %}
 </div>
 <div class="group-posts">
-    {% for post in posts %}
+    {% for post in group.posts %}
     <div class="post">
-        <h2>{{ post.title }}</h2>
-        <h3>{{ post.date }}<br><br></h3>
-        <p>{{ post.text|linebreaks|truncatewords:100 }}</p>
-        {% if post.text|length > 100 %}
+        <h3>{{ post.pub_date }}<br><br></h3>
+        <p>{{ post.text|truncate(1000) }}</p>
+        {% if post.text|length > 1000 %}
         <a class="post-continue-reading-ref" href="{{ post.get_absolute_url }}"><p>читать дальше...</p></a>
         {% endif %}
-        {% filterimgs post_id=post.pk as images %}
-        {% if post.photo_count != 0 %}
+        {% if post.images|length != 0 %}
             <div class="post-imgs">
-                {% for image_obj in images %}
+                {% for img in post.images %}
                     <div class="imgs-container">
-                        <a href="{{ image_obj.image }}"><img src="{{ image_obj.image }}" alt="Картинка #{{ forloop.counter }}"></a>
+                        <a href="{{ img.url }}"><img src="{{ img.url }}" alt="Картинка #{{ img.id }}"></a>
                     </div>
                 {% endfor %}
             </div>

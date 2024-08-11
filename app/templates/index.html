@@ -22,7 +22,9 @@
                             <div class="post-imgs">
                                 {% for image in post.images %}
                                     <div class="imgs-container">
-                                        <a href="{{ image.url }}"><img src="{{ image.url }}" alt="Картинка #{{ image.id }}"></a>
+                                        <a href="{{ image.url }}">
+                                            <img src="{{ image.url }}" alt="Картинка #{{ image.id }}">
+                                        </a>
                                     </div>
                                 {% endfor %}
                             </div>

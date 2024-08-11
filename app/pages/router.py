@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, Request
 from fastapi.templating import Jinja2Templates
 
+from app.groups.router import get_all_groups, get_group_by_id
+from app.groups.schemas import GroupSchema, GroupSchemaWithPosts
 from app.posts.router import get_all_posts, get_all_posts_with_related_data, get_post_by_id
 from app.posts.schemas import PostResponseSchemaWithImages
 
@@ -30,5 +32,29 @@ async def get_post_page(request: Request, post: PostResponseSchemaWithImages = D
         context={
             'request': request,
             'post': post,
+        }
+    )
+
+
+# @router.get('/groups')
+# async def get_all_groups_page(request: Request, groups: list[GroupSchema] = Depends(get_all_groups)):
+#     return templates.TemplateResponse(
+#         name='all_groups.html',
+#         context={
+#             'request': request,
+#             'groups': groups,
+#         }
+#     )
+
+
+@router.get('/group/{group_id}')
+async def get_group_page(
+    request: Request, group: GroupSchemaWithPosts = Depends(get_group_by_id)
+):
+    return templates.TemplateResponse(
+        name='group.html',
+        context={
+            'request': request,
+            'group': group,
         }
     )

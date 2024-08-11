@@ -1,5 +1,5 @@
 from app.groups.models import Groups
-from app.groups.schemas import GroupSchemaWithPosts
+from app.groups.schemas import GroupSchemaWithPosts, ImagePostsGroupSchema
 from app.images.models import GroupImages
 from app.images.schemas import ImageResponseSchema
 from app.posts.schemas import PostResponseSchemaWithImages
@@ -26,13 +26,16 @@ class GroupDTO:
         return group_models
     
     @classmethod
-    def model_to_schema(cls, group_model: Groups) -> GroupSchemaWithPosts:
-        return GroupSchemaWithPosts(
+    def model_to_schema(cls, group_model: Groups) -> ImagePostsGroupSchema:
+        return ImagePostsGroupSchema(
         id=group_model.id,
         title=group_model.title,
         source_id=group_model.source_id,
         is_hidden=group_model.is_hidden,
         user_id=group_model.user_id,
+        image=ImageResponseSchema(
+            url=group_model.group_image.url
+        ),
         posts=[
             PostResponseSchemaWithImages(
                 id=post.id,

@@ -1,3 +1,4 @@
+from typing import Any
 from pydantic import BaseModel
 
 
@@ -11,3 +12,11 @@ class GroupSchema(BaseModel):
 
 class GroupSchemaWithPosts(GroupSchema):
     posts: list = []
+
+
+class ImageGroupSchema(GroupSchema):
+    image: Any
+
+
+class ImagePostsGroupSchema(ImageGroupSchema, GroupSchemaWithPosts):
+    pass
