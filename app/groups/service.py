@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from app.groups.dto import GroupDTO
 from app.groups.models import Groups
+from app.images.models import GroupImages
 from app.posts.models import Posts
 from app.service.base import BaseService
 from app.database import async_sessionmaker
@@ -46,3 +47,12 @@ class GroupService(BaseService):
             group_query = select(Groups).where(Groups.id == group_id)
             group_result = await session.execute(group_query)
             return group_result.scalar()
+        
+    @classmethod
+    async def get_all_groups_with_images(cls) -> list[Groups]:
+        async with async_sessionmaker() as session:
+            group_query = select(Groups).join(
+                GroupImages, GroupImages.group_id == Groups.id
+            )
+            group_result = await session.execute(group_query)
+            return group_result.scalars().all()

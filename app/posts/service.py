@@ -40,12 +40,14 @@ class PostService(BaseService):
             return group_result.scalar()
         
     @classmethod
-    async def get_posts_with_group_and_images(cls) -> list[Posts]:
+    async def get_posts_with_group_and_images(cls, order_by_pub_date: bool = False) -> list[Posts]:
         async with async_sessionmaker() as session:
             group_query = select(Posts).join(
                 PostImages, PostImages.post_id == Posts.id
             ).join(
                 Groups, Groups.id == Posts.group_id
             ).distinct()
+            if order_by_pub_date:
+                group_query = group_query.order_by(Posts.pub_date.desc())
             group_result = await session.execute(group_query)
             return group_result.scalars().all()

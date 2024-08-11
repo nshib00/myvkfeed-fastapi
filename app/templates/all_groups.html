@@ -1,17 +1,15 @@
-{% extends 'main/base.html' %}
-{% load main_tags %}
+{% extends 'base.html' %}
 
 {% block content %}
     <div class="subs-search-toolbar">
         <span class="subs-search">
-            <form action="{% url 'subs' %}" class="search-form subs-search" method='get' id="subs-search-form">
-                {% csrf_token %}
-                <p><label for="{{ form.group_title.id_for_label }}" class="form-label"></label>{{ form.group_title }}</p>
+            <form action="" class="search-form subs-search" method='get' id="subs-search-form">
+                <p><label for="" class="form-label"></label></p>
                 <button type="reset" class="reset-button">Reset text</button>
             </form>
         </span>
         <span class="reset-search-form">
-            <a href="{% url 'subs' %}"><p>Reset search results</p></a>
+            <a href=""><p>Reset search results</p></a>
         </span>
         <span class="subs-sort">
             <span>Sort groups by:</span>
@@ -24,20 +22,22 @@
                 <option value="desc">by posts count (desc)</option>
         </select>
         </span>
-        {% if groups_count != 0 %}
+        {% if groups|length != 0 %}
             <span class="searched-subs-count">
-                <p>Groups found: {{ groups_count }}</p>
+                <p>Groups found: {{ groups|length }}</p>
             </span>
         {% endif %}
     </div>
 
     <div class="all-subs" cellpadding="5" cellspacing="5" border="1">
         {% for group in groups %}
-            {% countposts title=group.group_title as posts_count %}
             <div class="subs-block">
-                <span><img class="subs-image" src="{{ group.image }}" alt="{{ group.group_title }}"></span>
-                <span><a href="{{ group.get_absolute_url }}"><h3>{{ group.group_title }}</h3></a></span>
-                <p>{{ posts_count }}</p>
+                <h3>
+                    <a href="group/{{ group.id }}">{{ group.title }}</a>
+                </h3>
+                <span><img class="subs-image" src="{{ group.image.url }}" alt="{{ group.group_title }}"></span>
+                <span><a href="pages/group/{{ group_id }}"><h3>{{ group.group_title }}</h3></a></span>
+                <p>Количество постов: {{ group.posts|length }}</p>
             </div>
         {% endfor %}
     </div>

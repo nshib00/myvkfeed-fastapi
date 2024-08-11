@@ -14,7 +14,8 @@ async def load_user_feed(posts_count: int = 50) -> list:
 
 def clear_posts_from_ads(posts: list) -> None:
     for post in posts:
-        if post.get('marked_as_ads') == 1:
+        post_is_empty: bool = (not post.get('text')) or (not post.get('attachments'))
+        if post.get('marked_as_ads') == 1 or post_is_empty:
             posts.remove(post)
 
 

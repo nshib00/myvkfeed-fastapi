@@ -12,7 +12,7 @@ sys.path.insert(0, str(path))
 
 from app.posts.dto import PostDTO
 from app.exceptions import NoGroupsException, PostNotExistsException
-from app.posts.schemas import PostSchema, PostResponseSchemaWithImages, PostResponseRenderSchema
+from app.posts.schemas import PostSchema, PostResponseRenderSchema
 from app.posts.service import PostService
 
 from vk.posts import load_user_feed
@@ -22,14 +22,13 @@ router = APIRouter(prefix='/posts', tags=['Посты'])
 
 
 @router.get('/all')
-async def get_all_posts(
-    user: Users = Depends(get_active_current_user), with_related: bool = False
-) -> list[PostSchema] | list[PostResponseRenderSchema]:
-    if with_related:
-        post_models = await PostService.get_posts_with_group_and_images()
-        return PostDTO.many_models_to_schemas(post_models, with_group_title=True)
-    else:
-        return await PostService.find_all()
+async def get_all_posts(user: Users = Depends(get_active_current_user)) -> list[PostSchema]:
+    return await PostService.find_all()
+    
+
+async def get_all_posts_to_render(user: Users = Depends(get_active_current_user)) -> list[PostResponseRenderSchema]:
+    post_models = await PostService.get_posts_with_group_and_images(order_by_pub_date=True)
+    return PostDTO.many_models_to_schemas(post_models, with_group_title=True)
 
 
 @router.get('/{post_id}')

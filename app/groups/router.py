@@ -13,7 +13,7 @@ sys.path.insert(0, str(path))
 
 from app.exceptions import GroupNotExistsException, GroupNotFoundInUserGroupsException
 from app.groups.models import Groups
-from app.groups.schemas import GroupSchema, GroupSchemaWithPosts
+from app.groups.schemas import GroupSchema, GroupSchemaWithPosts, ImagePostsGroupSchema
 from app.groups.service import GroupService
 from app.groups.utils import get_group_ids_from_string
 from app.groups.dto import GroupDTO
@@ -27,6 +27,13 @@ router = APIRouter(prefix='/groups', tags=['Группы ВК'])
 @router.get('')
 async def get_all_groups(user: Users = Depends(get_active_current_user)) -> list[GroupSchema]:
     return await GroupService.find_all(order_by_id=True, user_id=user.id, is_hidden=False)
+
+
+async def get_all_groups_to_render(user: Users = Depends(get_active_current_user)) -> list[ImagePostsGroupSchema]:
+    group_models = await GroupService.get_all_groups_with_images()
+    g = GroupDTO.many_models_to_schemas(group_models)
+    return g
+
 
 
 @router.get('/{group_id}')

@@ -65,7 +65,8 @@ class PostDTO:
             group_title=None
         )
         if with_group_title:
-            post_schema.group_title = post_model.group.title
+            if hasattr(post_model.group, 'title'):
+                post_schema.group_title = post_model.group.title
         return post_schema
     
     @classmethod

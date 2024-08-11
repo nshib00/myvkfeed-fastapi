@@ -2,8 +2,8 @@
 
 {% block content %}
    <div class="post">
-    <h2>{{ post.title }}</h2>
-    <h3>{{ post.date }}</h3>
+    <h2>{{ post.group_title }}</h2>
+    <h3>{{ post.pub_date.strftime('%d.%m.%Y %H:%M') }}</h3>
     <p>{{ post.text }}</p>
     {% if post.images|length != 0 %}
        <div class="post-imgs">

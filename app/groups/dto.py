@@ -1,5 +1,5 @@
 from app.groups.models import Groups
-from app.groups.schemas import GroupSchemaWithPosts, ImagePostsGroupSchema
+from app.groups.schemas import ImagePostsGroupSchema
 from app.images.models import GroupImages
 from app.images.schemas import ImageResponseSchema
 from app.posts.schemas import PostResponseSchemaWithImages
@@ -47,6 +47,12 @@ class GroupDTO:
              ) for post in group_model.posts
         ],
     )
+
+    @classmethod
+    def many_models_to_schemas(cls, group_models: list[Groups]) -> list[ImagePostsGroupSchema]:
+        return [
+            cls.model_to_schema(group_model=group) for group in group_models
+        ]
 
 
 
