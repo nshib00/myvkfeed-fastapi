@@ -22,14 +22,14 @@ router = APIRouter(prefix='/posts', tags=['Посты'])
 
 
 @router.get('/all')
-async def get_all_posts(user: Users = Depends(get_active_current_user)) -> list[PostSchema]:
-    return await PostService.find_all()
-
-
-@router.get('/all_with_related')
-async def get_all_posts_with_related_data(user: Users = Depends(get_active_current_user)) -> list[PostResponseRenderSchema]:
-    post_models = await PostService.get_posts_with_group_and_images()
-    return PostDTO.many_models_to_schemas(post_models, with_group_title=True)
+async def get_all_posts(
+    user: Users = Depends(get_active_current_user), with_related: bool = False
+) -> list[PostSchema] | list[PostResponseRenderSchema]:
+    if with_related:
+        post_models = await PostService.get_posts_with_group_and_images()
+        return PostDTO.many_models_to_schemas(post_models, with_group_title=True)
+    else:
+        return await PostService.find_all()
 
 
 @router.get('/{post_id}')

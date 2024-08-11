@@ -25,7 +25,7 @@ router = APIRouter(prefix='/groups', tags=['Группы ВК'])
 
 
 @router.get('')
-async def get_all_groups(user: Users = Depends(get_active_current_user), with_posts: bool = False) -> list[GroupSchema]:
+async def get_all_groups(user: Users = Depends(get_active_current_user)) -> list[GroupSchema]:
     return await GroupService.find_all(order_by_id=True, user_id=user.id, is_hidden=False)
 
 

@@ -3,7 +3,7 @@ from fastapi.templating import Jinja2Templates
 
 from app.groups.router import get_all_groups, get_group_by_id
 from app.groups.schemas import GroupSchema, GroupSchemaWithPosts
-from app.posts.router import get_all_posts, get_all_posts_with_related_data, get_post_by_id
+from app.posts.router import get_all_posts, get_post_by_id
 from app.posts.schemas import PostResponseSchemaWithImages
 
 
@@ -16,7 +16,9 @@ templates = Jinja2Templates(directory='app/templates')
 
 
 @router.get('')
-async def get_main_page(request: Request, posts: list[PostResponseSchemaWithImages] = Depends(get_all_posts_with_related_data)):
+async def get_main_page(
+    request: Request, posts: list[PostResponseSchemaWithImages] = Depends(get_all_posts, with_related=True)
+):
     return templates.TemplateResponse(
         name='index.html',
         context={
