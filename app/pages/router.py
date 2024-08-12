@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, status
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from app.groups.router import get_all_groups_to_render, get_group_by_id
+from app.groups.router import add_all_groups, get_all_groups_to_render, get_group_by_id
 from app.groups.schemas import GroupSchema, GroupSchemaWithPosts
-from app.posts.router import get_all_posts_to_render, get_post_by_id
+from app.posts.router import add_all_posts, get_all_posts_to_render, get_post_by_id
 from app.posts.schemas import PostResponseRenderSchema
 from app.users.auth.dependencies import get_active_current_user
 from app.users.models import Users
@@ -20,7 +21,7 @@ templates = Jinja2Templates(directory='app/templates')
 
 base_context = {
     'menu': [
-        {'title': 'Обновить ленту', 'url': ''},
+        {'title': 'Обновить ленту', 'url': '/pages/update_feed'},
         {'title': 'Мои группы', 'url': '/pages/groups'},
     ],
     'version': __version__,
@@ -89,3 +90,13 @@ async def get_group_page(
             'user': user,
         }
     )
+
+
+@router.get('/update_feed')
+async def get_group_page(
+    request: Request,
+    added_groups = Depends(add_all_groups),
+    added_posts = Depends(add_all_posts),
+    user: Users = Depends(get_active_current_user)
+):
+    return RedirectResponse(url='/pages', status_code=status.HTTP_303_SEE_OTHER)
