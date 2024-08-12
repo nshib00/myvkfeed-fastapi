@@ -10,26 +10,21 @@
     <span class="menu-container">
     <div class="topmenu">
         {% block menu %}
+        <div class="logo" valign="top">
+             <a href="/pages">
+                <img src="{{ url_for('static', path='/images/app_logo.png') }}" alt="MyVkFeed">
+             </a>
+        </div>
             {% for item in menu %}
-                {% if forloop.first %}
-                    <div class="logo" valign="top">
-                        <a class="home-ref" href=""></a>
-                    </div>
-                {% else %}
-                    <span class="topmenu-item" valign="top">
-                        <a class="topmenu-item-ref" href="">{{ item.title }}</a>
-                    </span>
-                {% endif %}
+                <span class="topmenu-item" valign="top">
+                    <a class="topmenu-item-ref" href="{{ item.url }}">{{ item.title }}</a>
+                </span>
             {% endfor %}
     </div>
-        <div class="login" valign="top">
-            <p><a class="login-ref" href="">Выйти</a></p>
-        </div>
-        <div class="login" valign="top">
-            <a class="login-ref" href="">Войти</a>
-        </div>
+    <span class="topmenu-item right">
+        <p><a class="login-ref" href="/pages/logout">{{ user.name }} | Выйти</a></p>
+    </span>
     {% endblock menu %}
-    </div>
     </span>
 </header>
 <body>

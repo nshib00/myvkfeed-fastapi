@@ -60,8 +60,8 @@ select {
 }
 
 .topmenu {
-    display: grid;
-    grid-template-columns: 1fr 4fr 5fr 4fr 2fr 3fr;
+    display: flex;
+    flex-direction: row;
     padding: 0 10px 0;
     align-items: center;
 }
@@ -88,6 +88,10 @@ select {
     padding: 0 0 0;
     justify-content: center;
     align-items: center;
+}
+
+.right {
+    margin-left: auto;
 }
 
 .page-ref {

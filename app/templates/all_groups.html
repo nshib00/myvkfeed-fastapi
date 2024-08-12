@@ -5,32 +5,36 @@
         <span class="subs-search">
             <form action="" class="search-form subs-search" method='get' id="subs-search-form">
                 <p><label for="" class="form-label"></label></p>
-                <button type="reset" class="reset-button">Reset text</button>
+                <button type="reset" class="reset-button">Очистить</button>
             </form>
         </span>
         <span class="reset-search-form">
-            <a href=""><p>Reset search results</p></a>
+            <a href=""><p>Сбросить результаты поиска</p></a>
         </span>
         <span class="subs-sort">
-            <span>Sort groups by:</span>
+            <span>Сортировка:</span>
         <select name="group-sort-select">
-            <optgroup label="by alphabet:"></optgroup>
-                <option value="asc">by alphabet (asc)</option>
-                <option value="desc">by alphabet (desc)</option>
-            <optgroup label="by posts count:"></optgroup>
-                <option value="asc">by posts count (asc)</option>
-                <option value="desc">by posts count (desc)</option>
+            <optgroup label="По алфавиту:"></optgroup>
+                <option value="asc">А-Я</option>
+                <option value="desc">Я-А</option>
+            <optgroup label="По количеству постов:"></optgroup>
+                <option value="asc">По возрастанию</option>
+                <option value="desc">По убыванию</option>
         </select>
         </span>
+        <div>
+            <a href="groups/hidden">Скрытые группы</a>
+        </div>
         {% if groups|length != 0 %}
             <span class="searched-subs-count">
-                <p>Groups found: {{ groups|length }}</p>
+                <p>Групп найдено: {{ groups|length }}</p>
             </span>
         {% endif %}
     </div>
 
     <div class="all-subs" cellpadding="5" cellspacing="5" border="1">
         {% for group in groups %}
+            {% if not group.is_hidden %}
             <div class="subs-block">
                 <h3>
                     <a href="group/{{ group.id }}">{{ group.title }}</a>
@@ -38,7 +42,9 @@
                 <span><img class="subs-image" src="{{ group.image.url }}" alt="{{ group.group_title }}"></span>
                 <span><a href="pages/group/{{ group_id }}"><h3>{{ group.group_title }}</h3></a></span>
                 <p>Количество постов: {{ group.posts|length }}</p>
+                <a href="/groups/hide/{{ group.id }}">Скрыть группу</p>
             </div>
+            {% endif %}
         {% endfor %}
     </div>
 {% endblock %}
