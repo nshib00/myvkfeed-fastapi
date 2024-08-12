@@ -49,10 +49,10 @@ class GroupService(BaseService):
             return group_result.scalar()
         
     @classmethod
-    async def get_all_groups_with_images(cls) -> list[Groups]:
+    async def get_groups_with_images(cls, get_hidden: bool = False) -> list[Groups]:
         async with async_sessionmaker() as session:
             group_query = select(Groups).join(
                 GroupImages, GroupImages.group_id == Groups.id
-            )
+            ).where(Groups.is_hidden == get_hidden)
             group_result = await session.execute(group_query)
             return group_result.scalars().all()

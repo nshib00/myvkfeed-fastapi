@@ -30,10 +30,12 @@ async def get_all_groups(user: Users = Depends(get_active_current_user)) -> list
 
 
 async def get_all_groups_to_render(user: Users = Depends(get_active_current_user)) -> list[ImagePostsGroupSchema]:
-    group_models = await GroupService.get_all_groups_with_images()
-    g = GroupDTO.many_models_to_schemas(group_models)
-    return g
+    group_models = await GroupService.get_groups_with_images()
+    return GroupDTO.many_models_to_schemas(group_models)
 
+async def get_hidden_groups_to_render(user: Users = Depends(get_active_current_user)) -> list[ImagePostsGroupSchema]:
+    group_models = await GroupService.get_groups_with_images(get_hidden=True)
+    return GroupDTO.many_models_to_schemas(group_models)
 
 
 @router.get('/{group_id}')
@@ -67,16 +69,29 @@ async def delete_all_groups(admin: Users = Depends(get_admin)) -> None:
     await GroupService.delete_all()
 
 
+async def get_and_check_group_for_presence(group_id: int, user: Users = Depends(get_active_current_user)) -> None:
+    group_from_db = await GroupService.find_by_id(group_id)
+    if group_from_db is None:
+        raise GroupNotExistsException
+    if group_from_db.user_id != user.id:
+        raise GroupNotFoundInUserGroupsException
+
+
+async def hide_group_from_feed(group_id: int, user: Users = Depends(get_active_current_user)) -> None:
+    await get_and_check_group_for_presence(group_id=group_id, user=user)
+    await GroupService.update(Groups.id == group_id, is_hidden=True)
+
+
+async def show_group_in_feed(group_id: int, user: Users = Depends(get_active_current_user)) -> None:
+    await get_and_check_group_for_presence(group_id=group_id, user=user)
+    await GroupService.update(Groups.id == group_id, is_hidden=False)
+
+
 @router.patch('/hide')
 async def hide_groups_from_feed(groups_to_hide: str, user: Users = Depends(get_active_current_user)) -> JSONResponse:
     group_ids: list = get_group_ids_from_string(group_ids_str=groups_to_hide)
     for group_id in group_ids:
-        group_from_db = await GroupService.find_by_id(group_id)
-        if group_from_db is None:
-            raise GroupNotExistsException
-        if group_from_db.user_id != user.id:
-            raise GroupNotFoundInUserGroupsException
-        await GroupService.update(Groups.id == group_id, is_hidden=True)
+         await hide_group_from_feed(group_id=group_id, user=user)
     return JSONResponse(
         {'hidden_group_ids': group_ids}
     )
@@ -86,12 +101,7 @@ async def hide_groups_from_feed(groups_to_hide: str, user: Users = Depends(get_a
 async def show_groups_in_feed(groups_to_show: str, user: Users = Depends(get_active_current_user)) -> JSONResponse:
     group_ids: list = get_group_ids_from_string(group_ids_str=groups_to_show)
     for group_id in group_ids:
-        group_from_db = await GroupService.find_by_id(group_id)
-        if group_from_db is None:
-            raise GroupNotExistsException
-        if group_from_db.user_id != user.id:
-            raise GroupNotFoundInUserGroupsException
-        await GroupService.update(Groups.id == group_id, is_hidden=False)
+        await show_group_in_feed(group_id=group_id, user_id=user.id)
     return JSONResponse(
         {'shown_group_id': group_ids}
     )

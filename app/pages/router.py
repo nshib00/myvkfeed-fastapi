@@ -2,8 +2,11 @@ from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from app.groups.router import add_all_groups, get_all_groups_to_render, get_group_by_id
-from app.groups.schemas import GroupSchema, GroupSchemaWithPosts
+from app.groups.router import (
+    add_all_groups, get_all_groups_to_render, get_group_by_id, get_hidden_groups_to_render,
+    hide_group_from_feed, show_group_in_feed,
+)
+from app.groups.schemas import GroupSchemaWithPosts, ImagePostsGroupSchema
 from app.posts.router import add_all_posts, get_all_posts_to_render, get_post_by_id
 from app.posts.schemas import PostResponseRenderSchema
 from app.users.auth.dependencies import get_active_current_user
@@ -63,11 +66,27 @@ async def get_post_page(
 @router.get('/groups')
 async def get_all_groups_page(
     request: Request,
-    groups: list[GroupSchema] = Depends(get_all_groups_to_render),
+    groups: list[ImagePostsGroupSchema] = Depends(get_all_groups_to_render),
     user: Users = Depends(get_active_current_user)
 ):
     return templates.TemplateResponse(
         name='all_groups.html',
+        context=base_context | {
+            'request': request,
+            'groups': groups,
+            'user': user,
+        }
+    )
+
+
+@router.get('/groups/hidden')
+async def get_hidden_groups_page(
+    request: Request,
+    groups: list[ImagePostsGroupSchema] = Depends(get_hidden_groups_to_render),
+    user: Users = Depends(get_active_current_user)
+):
+    return templates.TemplateResponse(
+        name='hidden_groups.html',
         context=base_context | {
             'request': request,
             'groups': groups,
@@ -92,11 +111,32 @@ async def get_group_page(
     )
 
 
+@router.get('/group/hide/{group_id}')
+async def hide_group(
+    request: Request,
+    hidden_group = Depends(hide_group_from_feed),
+    user: Users = Depends(get_active_current_user)
+):
+    redirect_url = request.url_for('get_all_groups_page')
+    return RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+
+
+@router.get('/group/show/{group_id}')
+async def show_group(
+    request: Request,
+    shown_group = Depends(show_group_in_feed),
+    user: Users = Depends(get_active_current_user),
+):
+    redirect_url = request.url_for('get_all_groups_page')
+    return RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+
+
 @router.get('/update_feed')
-async def get_group_page(
+async def update_posts_and_groups(
     request: Request,
     added_groups = Depends(add_all_groups),
     added_posts = Depends(add_all_posts),
     user: Users = Depends(get_active_current_user)
 ):
-    return RedirectResponse(url='/pages', status_code=status.HTTP_303_SEE_OTHER)
+    redirect_url = request.url_for('get_main_page')
+    return RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)

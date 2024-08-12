@@ -1,50 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'base_groups_list.html' %}
 
-{% block content %}
-    <div class="subs-search-toolbar">
-        <span class="subs-search">
-            <form action="" class="search-form subs-search" method='get' id="subs-search-form">
-                <p><label for="" class="form-label"></label></p>
-                <button type="reset" class="reset-button">Очистить</button>
-            </form>
-        </span>
-        <span class="reset-search-form">
-            <a href=""><p>Сбросить результаты поиска</p></a>
-        </span>
-        <span class="subs-sort">
-            <span>Сортировка:</span>
-        <select name="group-sort-select">
-            <optgroup label="По алфавиту:"></optgroup>
-                <option value="asc">А-Я</option>
-                <option value="desc">Я-А</option>
-            <optgroup label="По количеству постов:"></optgroup>
-                <option value="asc">По возрастанию</option>
-                <option value="desc">По убыванию</option>
-        </select>
-        </span>
-        <div>
-            <a href="groups/hidden">Скрытые группы</a>
-        </div>
-        {% if groups|length != 0 %}
-            <span class="searched-subs-count">
-                <p>Групп найдено: {{ groups|length }}</p>
-            </span>
-        {% endif %}
-    </div>
-
-    <div class="all-subs" cellpadding="5" cellspacing="5" border="1">
-        {% for group in groups %}
-            {% if not group.is_hidden %}
-            <div class="subs-block">
-                <h3>
-                    <a href="group/{{ group.id }}">{{ group.title }}</a>
-                </h3>
-                <span><img class="subs-image" src="{{ group.image.url }}" alt="{{ group.group_title }}"></span>
-                <span><a href="pages/group/{{ group_id }}"><h3>{{ group.group_title }}</h3></a></span>
-                <p>Количество постов: {{ group.posts|length }}</p>
-                <a href="/groups/hide/{{ group.id }}">Скрыть группу</p>
-            </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-{% endblock %}
+{% block groups_content %}
+    <div>
+        <a href="{{ url_for('get_hidden_groups_page') }}">Скрытые группы</a>
+    </div> 
+{% endblock %}    
