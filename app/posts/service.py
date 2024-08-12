@@ -35,19 +35,19 @@ class PostService(BaseService):
     @classmethod
     async def get_post_with_images(cls, post_id: int) -> Posts | None:
         async with async_sessionmaker() as session:
-            group_query = select(Posts).where(Posts.id == post_id)
-            group_result = await session.execute(group_query)
-            return group_result.scalar()
+            post_query = select(Posts).where(Posts.id == post_id)
+            post_result = await session.execute(post_query)
+            return post_result.scalar()
         
     @classmethod
     async def get_posts_with_group_and_images(cls, order_by_pub_date: bool = False) -> list[Posts]:
         async with async_sessionmaker() as session:
-            group_query = select(Posts).join(
+            posts_query = select(Posts).join(
                 PostImages, PostImages.post_id == Posts.id
             ).join(
                 Groups, Groups.id == Posts.group_id
-            ).distinct()
+            ).where(Groups.is_hidden == False).distinct()
             if order_by_pub_date:
-                group_query = group_query.order_by(Posts.pub_date.desc())
-            group_result = await session.execute(group_query)
-            return group_result.scalars().all()
+                posts_query = posts_query.order_by(Posts.pub_date.desc())
+            posts_result = await session.execute(posts_query)
+            return posts_result.scalars().all()
