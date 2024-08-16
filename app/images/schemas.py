@@ -2,4 +2,4 @@ from pydantic import BaseModel
 
 
 class ImageResponseSchema(BaseModel):
-    url: str
+    urls: dict[str, str]

@@ -31,14 +31,18 @@ class PostDTO:
 
     @classmethod
     def get_images_from_post_dict(cls, post_dict: dict) -> list[PostImages]:
+        ALLOWED_PHOTO_TYPES = ('p', 'q', 'r')
         post_images = []
 
         for attachment in post_dict.get('attachments'):
             if attachment['type'] == 'photo':
+                urls_dict = {}
+                for size in attachment['photo']['sizes']:
+                    photo_type = size['type']
+                    if photo_type in ALLOWED_PHOTO_TYPES:
+                        urls_dict[photo_type] = size['url']
                 post_images.append(
-                    PostImages(
-                        url=attachment['photo']['orig_photo']['url']
-                    )
+                    PostImages(urls=urls_dict)
                 )
         return post_images
     
@@ -75,7 +79,7 @@ class PostDTO:
             text=post_model.text,
             group_id=post_model.group_id,
             images=[
-                ImageResponseSchema(url=img.url) for img in post_model.images
+                ImageResponseSchema(urls=img.urls) for img in post_model.images
             ],
             group_title=None
         )
@@ -87,5 +91,5 @@ class PostDTO:
     @classmethod
     def many_models_to_render_schemas(cls, post_models: list[Posts], with_group_title=False) -> list[PostResponseRenderSchema]:
         return [
-            cls.one_model_to_schema(post_model, with_group_title=with_group_title) for post_model in post_models
+            cls.one_model_to_render_schema(post_model, with_group_title=with_group_title) for post_model in post_models
         ]

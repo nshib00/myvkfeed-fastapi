@@ -20,10 +20,12 @@
                             <p>{{ post.text }}</p>
                         {% endif %}
                             <div class="post-imgs">
+                                {% set post_images_count = post.images|length %} 
                                 {% for image in post.images %}
                                     <div class="imgs-container">
-                                        <a href="{{ image.url }}">
-                                            <img src="{{ image.url }}" alt="Картинка #{{ image.id }}">
+                                        {% set optimal_img_url = image|choose_optimal(images_in_post=post_images_count) %}
+                                        <a href="{{ optimal_img_url }}">
+                                            <img src="{{ optimal_img_url }}" alt="Картинка #{{ image.id }}">
                                         </a>
                                     </div>
                                 {% endfor %}

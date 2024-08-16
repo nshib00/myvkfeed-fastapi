@@ -8,7 +8,7 @@ from app.groups.router import (
     hide_group_from_feed, show_group_in_feed,
 )
 from app.groups.schemas import GroupSchemaWithPosts, GroupRenderSchema
-from app.pages.filters import format_datetime
+from app.pages.filters import format_datetime, choose_optimal_image_url
 from app.posts.router import POSTS_CACHE_NAMESPACE, add_all_posts, get_all_posts_to_render, get_post_by_id
 from app.posts.schemas import PostResponseRenderSchema
 from app.users.auth.dependencies import get_active_current_user
@@ -23,6 +23,7 @@ router = APIRouter(
 
 templates = Jinja2Templates(directory='app/templates')
 templates.env.filters['format_datetime'] = format_datetime
+templates.env.filters['choose_optimal'] = choose_optimal_image_url
 
 
 base_context = {

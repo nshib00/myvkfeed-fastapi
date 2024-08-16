@@ -32,7 +32,7 @@ async def get_all_posts(user: Users = Depends(get_active_current_user)) -> list[
     return PostDTO.many_models_to_schemas(post_models=posts_from_db)
 
 
-@router.get('/{post_id}')
+@router.get('/post/{post_id}')
 async def get_post_by_id(post_id: int, user: Users = Depends(get_active_current_user)) -> PostResponseRenderSchema:
     post = await PostService.get_post_with_images(post_id=post_id)
     if post is None:
