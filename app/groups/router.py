@@ -14,7 +14,7 @@ sys.path.insert(0, str(path))
 
 from app.exceptions import GroupNotExistsException, GroupNotFoundInUserGroupsException
 from app.groups.models import Groups
-from app.groups.schemas import GroupSchema, GroupSchemaWithPosts, ImagePostsGroupSchema
+from app.groups.schemas import GroupSchema, GroupSchemaWithPosts, GroupRenderSchema
 from app.groups.service import GroupService
 from app.groups.utils import get_group_ids_from_string
 from app.groups.dto import GroupDTO
@@ -30,7 +30,8 @@ GROUPS_CACHE_NAMESPACE = 'groups'
 @router.get('')
 @cache(expire=900, namespace=GROUPS_CACHE_NAMESPACE)
 async def get_all_groups(user: Users = Depends(get_active_current_user)) -> list[GroupSchema]:
-    return await GroupService.find_all(order_by_id=True, user_id=user.id, is_hidden=False)
+    groups_from_db = await GroupService.find_all(order_by_id=True, user_id=user.id, is_hidden=False)
+    return GroupDTO.many_models_to_schemas(groups_from_db)
 
 
 @router.get('/{group_id}')
@@ -38,7 +39,7 @@ async def get_group_by_id(group_id: int, user: Users = Depends(get_active_curren
     group = await GroupService.get_group_with_posts(group_id)
     if group is None:
         raise GroupNotExistsException
-    return GroupDTO.model_to_schema(group_model=group)
+    return GroupDTO.one_model_to_render_schema(group_model=group)
 
 
 @router.post('', status_code=status.HTTP_201_CREATED)
@@ -65,7 +66,7 @@ async def delete_all_groups(admin: Users = Depends(get_admin)) -> None:
 
 
 async def get_and_check_group_for_presence(group_id: int, user: Users = Depends(get_active_current_user)) -> None:
-    group_from_db = await GroupService.find_by_id(group_id)
+    group_from_db = await GroupService.find_one_or_none(id=group_id)
     if group_from_db is None:
         raise GroupNotExistsException
     if group_from_db.user_id != user.id:
@@ -92,15 +93,15 @@ async def show_groups_in_feed(groups_to_show: str, user: Users = Depends(get_act
     )
 
 @cache(expire=900, namespace=GROUPS_CACHE_NAMESPACE)
-async def get_all_groups_to_render(user: Users = Depends(get_active_current_user)) -> list[ImagePostsGroupSchema]:
+async def get_all_groups_to_render(user: Users = Depends(get_active_current_user)) -> list[GroupRenderSchema]:
     group_models = await GroupService.get_groups_with_images()
-    return GroupDTO.many_models_to_schemas(group_models)
+    return GroupDTO.many_models_to_render_schemas(group_models)
 
 
 @cache(expire=900, namespace=GROUPS_CACHE_NAMESPACE)
-async def get_hidden_groups_to_render(user: Users = Depends(get_active_current_user)) -> list[ImagePostsGroupSchema]:
+async def get_hidden_groups_to_render(user: Users = Depends(get_active_current_user)) -> list[GroupRenderSchema]:
     group_models = await GroupService.get_groups_with_images(get_hidden=True)
-    return GroupDTO.many_models_to_schemas(group_models)
+    return GroupDTO.many_models_to_render_schemas(group_models)
 
 
 async def hide_group_from_feed(group_id: int, user: Users = Depends(get_active_current_user)) -> None:

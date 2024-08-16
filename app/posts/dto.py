@@ -4,7 +4,7 @@ from sqlalchemy.exc import InvalidRequestError
 from app.groups.service import GroupService
 from app.images.models import PostImages
 from app.posts.models import Posts
-from app.posts.schemas import PostResponseRenderSchema, PostResponseSchemaWithImages
+from app.posts.schemas import PostResponseRenderSchema, PostResponseSchemaWithImages, PostSchema
 from app.images.schemas import ImageResponseSchema
 
 
@@ -27,7 +27,7 @@ class PostDTO:
         except InvalidRequestError:
             print(f'Cannot attach group: {post_group}.\nPost text: {post_model.text[:20] + "..."}')
         return post_model
-    
+
 
     @classmethod
     def get_images_from_post_dict(cls, post_dict: dict) -> list[PostImages]:
@@ -41,8 +41,7 @@ class PostDTO:
                     )
                 )
         return post_images
-
-
+    
     @classmethod
     async def raw_posts_to_models_list(cls, posts: list[dict]) -> list[Posts]:
         post_models = []
@@ -51,9 +50,25 @@ class PostDTO:
             post_models.append(post_model)
         return post_models
 
+    @classmethod
+    def one_model_to_schema(cls, post_model) -> PostSchema:
+        post_schema = PostSchema(
+            id=post_model.id,
+            pub_date=post_model.pub_date,
+            text=post_model.text,
+            group_id=post_model.group_id,
+            vk_id=post_model.vk_id,
+        )
+        return post_schema
 
     @classmethod
-    def one_model_to_schema(cls, post_model: Posts, with_group_title=False) -> PostResponseRenderSchema:
+    def many_models_to_schemas(cls, post_models: list[Posts]) -> list[PostSchema]:
+        return [
+            cls.one_model_to_schema(post_model) for post_model in post_models
+        ]
+
+    @classmethod
+    def one_model_to_render_schema(cls, post_model: Posts, with_group_title=False) -> PostResponseRenderSchema:
         post_schema = PostResponseRenderSchema(
             id=post_model.id,
             pub_date=post_model.pub_date,
@@ -70,7 +85,7 @@ class PostDTO:
         return post_schema
     
     @classmethod
-    def many_models_to_schemas(cls, post_models: list[Posts], with_group_title=False) -> list[PostResponseRenderSchema]:
+    def many_models_to_render_schemas(cls, post_models: list[Posts], with_group_title=False) -> list[PostResponseRenderSchema]:
         return [
             cls.one_model_to_schema(post_model, with_group_title=with_group_title) for post_model in post_models
         ]

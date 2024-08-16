@@ -7,7 +7,7 @@ from app.groups.router import (
     GROUPS_CACHE_NAMESPACE, add_all_groups, get_all_groups_to_render, get_group_by_id, get_hidden_groups_to_render,
     hide_group_from_feed, show_group_in_feed,
 )
-from app.groups.schemas import GroupSchemaWithPosts, ImagePostsGroupSchema
+from app.groups.schemas import GroupSchemaWithPosts, GroupRenderSchema
 from app.pages.filters import format_datetime
 from app.posts.router import POSTS_CACHE_NAMESPACE, add_all_posts, get_all_posts_to_render, get_post_by_id
 from app.posts.schemas import PostResponseRenderSchema
@@ -69,7 +69,7 @@ async def get_post_page(
 @router.get('/groups')
 async def get_all_groups_page(
     request: Request,
-    groups: list[ImagePostsGroupSchema] = Depends(get_all_groups_to_render),
+    groups: list[GroupRenderSchema] = Depends(get_all_groups_to_render),
     user: Users = Depends(get_active_current_user)
 ):
     return templates.TemplateResponse(
@@ -85,7 +85,7 @@ async def get_all_groups_page(
 @router.get('/groups/hidden')
 async def get_hidden_groups_page(
     request: Request,
-    groups: list[ImagePostsGroupSchema] = Depends(get_hidden_groups_to_render),
+    groups: list[GroupRenderSchema] = Depends(get_hidden_groups_to_render),
     user: Users = Depends(get_active_current_user)
 ):
     return templates.TemplateResponse(

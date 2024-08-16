@@ -10,7 +10,6 @@ from app.database import async_sessionmaker
 class GroupService(BaseService):
     model = Groups
 
-
     @classmethod
     async def update(cls, update_condition, **values) -> int:
         updated_group_id = await BaseService.update(cls.model, update_condition, **values)
@@ -26,20 +25,17 @@ class GroupService(BaseService):
                 if group_from_db.one_or_none() is None:
                     non_existing_groups.append(group)
             session.add_all(non_existing_groups)
-            await session.commit()
-        
+            await session.commit()    
 
     @classmethod
     async def add_groups_list(cls, groups: list, user_id: int) -> None:
         group_models = GroupDTO.raw_groups_to_models_list(groups, user_id)
         await cls.add_groups_if_not_exist(group_models)
 
-
     @classmethod
     async def get_group_by_source_id(cls, source_id: int) -> Groups | None:
-        group = await cls.find_one_or_none(mode='scalars', source_id=source_id)
+        group = await cls.find_one_or_none(source_id=source_id)
         return group
-    
 
     @classmethod
     async def get_group_with_posts(cls, group_id: int) -> Groups | None:

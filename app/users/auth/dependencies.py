@@ -33,7 +33,7 @@ async def get_current_user(token: str = Depends(get_token)):
     user_id_from_token = payload.get('sub')
     if user_id_from_token is None:
         raise InvalidTokenDataException
-    user = await UserService.find_by_id(model_id=int(user_id_from_token))
+    user = await UserService.find_one_or_none(id=int(user_id_from_token))
     if user is None:
         raise UserNotExistsException
     return user

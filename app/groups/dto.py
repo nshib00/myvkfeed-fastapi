@@ -1,5 +1,5 @@
 from app.groups.models import Groups
-from app.groups.schemas import ImagePostsGroupSchema
+from app.groups.schemas import GroupRenderSchema, GroupSchema
 from app.images.models import GroupImages
 from app.images.schemas import ImageResponseSchema
 from app.posts.schemas import PostResponseSchemaWithImages
@@ -25,9 +25,28 @@ class GroupDTO:
             group_models.append(group_model)
         return group_models
     
+
     @classmethod
-    def model_to_schema(cls, group_model: Groups) -> ImagePostsGroupSchema:
-        return ImagePostsGroupSchema(
+    def one_model_to_schema(cls, group_model: Groups) -> GroupSchema:
+        return GroupSchema(
+            id=group_model.id,
+            title=group_model.title,
+            source_id=group_model.source_id,
+            is_hidden=group_model.is_hidden,
+            user_id=group_model.user_id,
+        )
+    
+
+    @classmethod
+    def many_models_to_schemas(cls, group_models: list[Groups]) -> list[GroupSchema]:
+        return [
+            cls.one_model_to_schema(group_model=group) for group in group_models
+        ]
+
+    
+    @classmethod
+    def one_model_to_render_schema(cls, group_model: Groups) -> GroupRenderSchema:
+        return GroupRenderSchema(
         id=group_model.id,
         title=group_model.title,
         source_id=group_model.source_id,
@@ -49,9 +68,9 @@ class GroupDTO:
     )
 
     @classmethod
-    def many_models_to_schemas(cls, group_models: list[Groups]) -> list[ImagePostsGroupSchema]:
+    def many_models_to_render_schemas(cls, group_models: list[Groups]) -> list[GroupRenderSchema]:
         return [
-            cls.model_to_schema(group_model=group) for group in group_models
+            cls.one_model_to_render_schema(group_model=group) for group in group_models
         ]
 
 

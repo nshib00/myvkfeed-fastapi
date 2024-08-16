@@ -28,7 +28,8 @@ POSTS_CACHE_NAMESPACE = 'posts'
 @router.get('')
 @cache(expire=900, namespace=POSTS_CACHE_NAMESPACE)
 async def get_all_posts(user: Users = Depends(get_active_current_user)) -> list[PostSchema]:
-    return await PostService.find_all()
+    posts_from_db = await PostService.find_all()
+    return PostDTO.many_models_to_schemas(post_models=posts_from_db)
 
 
 @router.get('/{post_id}')
@@ -36,7 +37,7 @@ async def get_post_by_id(post_id: int, user: Users = Depends(get_active_current_
     post = await PostService.get_post_with_images(post_id=post_id)
     if post is None:
         raise PostNotExistsException
-    return PostDTO.one_model_to_schema(post_model=post, with_group_title=True)
+    return PostDTO.one_model_to_render_schema(post_model=post, with_group_title=True)
 
 
 @router.post('', status_code=status.HTTP_201_CREATED)
@@ -71,4 +72,4 @@ async def get_all_posts_to_render(user: Users = Depends(get_active_current_user)
     Используется в отображении постов в HTML на главной странице.
     '''
     post_models = await PostService.get_posts_with_group_and_images(order_by_pub_date=True)
-    return PostDTO.many_models_to_schemas(post_models, with_group_title=True)
+    return PostDTO.many_models_to_render_schemas(post_models, with_group_title=True)

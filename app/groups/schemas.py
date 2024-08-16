@@ -18,5 +18,5 @@ class ImageGroupSchema(GroupSchema):
     image: Any
 
 
-class ImagePostsGroupSchema(ImageGroupSchema, GroupSchemaWithPosts):
+class GroupRenderSchema(ImageGroupSchema, GroupSchemaWithPosts):
     pass
