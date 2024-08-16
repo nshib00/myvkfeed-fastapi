@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, Response, status
+from fastapi_cache.decorator import cache
 import sys
 from pathlib import Path
 
 from app.groups.service import GroupService
 from app.users.auth.dependencies import get_active_current_user, get_admin
 from app.users.models import Users
+
 
 
 path = Path(__file__).parent.parent.parent
@@ -20,15 +22,13 @@ from vk.posts import load_user_feed
 
 router = APIRouter(prefix='/posts', tags=['Посты'])
 
+POSTS_CACHE_NAMESPACE = 'posts'
 
-@router.get('/all')
+
+@router.get('')
+@cache(expire=900, namespace=POSTS_CACHE_NAMESPACE)
 async def get_all_posts(user: Users = Depends(get_active_current_user)) -> list[PostSchema]:
     return await PostService.find_all()
-    
-
-async def get_all_posts_to_render(user: Users = Depends(get_active_current_user)) -> list[PostResponseRenderSchema]:
-    post_models = await PostService.get_posts_with_group_and_images(order_by_pub_date=True)
-    return PostDTO.many_models_to_schemas(post_models, with_group_title=True)
 
 
 @router.get('/{post_id}')
@@ -62,3 +62,13 @@ async def load_user_posts_from_vk(user: Users = Depends(get_active_current_user)
 @router.delete('', status_code=204)
 async def delete_all_posts(admin: Users = Depends(get_admin)) -> None:
     await PostService.delete_all()
+
+
+@cache(expire=900, namespace=POSTS_CACHE_NAMESPACE)
+async def get_all_posts_to_render(user: Users = Depends(get_active_current_user)) -> list[PostResponseRenderSchema]:
+    ''' 
+    Dependency для получения постов со связанной группой и изображениями.
+    Используется в отображении постов в HTML на главной странице.
+    '''
+    post_models = await PostService.get_posts_with_group_and_images(order_by_pub_date=True)
+    return PostDTO.many_models_to_schemas(post_models, with_group_title=True)

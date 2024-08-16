@@ -12,7 +12,7 @@
                      {% for post in posts %}
                        <div class="col-md-6 infinite-item">
                         <h2>{{ post.group_title }}</h2>
-                        <h3>{{ post.pub_date.strftime('%d.%m.%Y %H:%M') }}</h3>
+                        <h3>{{ post.pub_date|format_datetime }}</h3>
                         {% if post.text|length > 1000 %}
                             <p>{{ post.text|truncate(1000) }}</p>
                            <a class="post-continue-reading-ref" href="/pages/post/{{ post.id }}"><p>читать дальше...</p></a>

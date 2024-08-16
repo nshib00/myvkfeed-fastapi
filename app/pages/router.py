@@ -1,14 +1,15 @@
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
+from fastapi_cache import FastAPICache
 
 from app.groups.router import (
-    add_all_groups, get_all_groups_to_render, get_group_by_id, get_hidden_groups_to_render,
+    GROUPS_CACHE_NAMESPACE, add_all_groups, get_all_groups_to_render, get_group_by_id, get_hidden_groups_to_render,
     hide_group_from_feed, show_group_in_feed,
 )
 from app.groups.schemas import GroupSchemaWithPosts, ImagePostsGroupSchema
 from app.pages.filters import format_datetime
-from app.posts.router import add_all_posts, get_all_posts_to_render, get_post_by_id
+from app.posts.router import POSTS_CACHE_NAMESPACE, add_all_posts, get_all_posts_to_render, get_post_by_id
 from app.posts.schemas import PostResponseRenderSchema
 from app.users.auth.dependencies import get_active_current_user
 from app.users.models import Users
@@ -140,5 +141,7 @@ async def update_posts_and_groups(
     added_posts = Depends(add_all_posts),
     user: Users = Depends(get_active_current_user)
 ):
+    await FastAPICache.clear(POSTS_CACHE_NAMESPACE)
+    await FastAPICache.clear(GROUPS_CACHE_NAMESPACE)
     redirect_url = request.url_for('get_main_page')
     return RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)

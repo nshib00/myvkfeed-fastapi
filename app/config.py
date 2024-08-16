@@ -42,11 +42,18 @@ class AuthSettings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 60
 
 
+class RedisSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix='REDIS_')
+
+    URL: str | None = None
+
+
 class Settings(BaseSettings):
     db: DBSettings = DBSettings()
     vk: VKSettings = VKSettings()
     auth: AuthSettings = AuthSettings()
     app: AppSettings = AppSettings()
+    redis: RedisSettings = RedisSettings()
     
     class Config:
         env_file = '../.env'

@@ -1,3 +1,4 @@
+from fastapi_cache.decorator import cache
 from fastapi import APIRouter, Depends, Response, status
 import sys
 from pathlib import Path
@@ -23,19 +24,13 @@ from app.users.models import Users
 
 router = APIRouter(prefix='/groups', tags=['Группы ВК'])
 
+GROUPS_CACHE_NAMESPACE = 'groups'
+
 
 @router.get('')
+@cache(expire=900, namespace=GROUPS_CACHE_NAMESPACE)
 async def get_all_groups(user: Users = Depends(get_active_current_user)) -> list[GroupSchema]:
     return await GroupService.find_all(order_by_id=True, user_id=user.id, is_hidden=False)
-
-
-async def get_all_groups_to_render(user: Users = Depends(get_active_current_user)) -> list[ImagePostsGroupSchema]:
-    group_models = await GroupService.get_groups_with_images()
-    return GroupDTO.many_models_to_schemas(group_models)
-
-async def get_hidden_groups_to_render(user: Users = Depends(get_active_current_user)) -> list[ImagePostsGroupSchema]:
-    group_models = await GroupService.get_groups_with_images(get_hidden=True)
-    return GroupDTO.many_models_to_schemas(group_models)
 
 
 @router.get('/{group_id}')
@@ -77,16 +72,6 @@ async def get_and_check_group_for_presence(group_id: int, user: Users = Depends(
         raise GroupNotFoundInUserGroupsException
 
 
-async def hide_group_from_feed(group_id: int, user: Users = Depends(get_active_current_user)) -> None:
-    await get_and_check_group_for_presence(group_id=group_id, user=user)
-    await GroupService.update(Groups.id == group_id, is_hidden=True)
-
-
-async def show_group_in_feed(group_id: int, user: Users = Depends(get_active_current_user)) -> None:
-    await get_and_check_group_for_presence(group_id=group_id, user=user)
-    await GroupService.update(Groups.id == group_id, is_hidden=False)
-
-
 @router.patch('/hide')
 async def hide_groups_from_feed(groups_to_hide: str, user: Users = Depends(get_active_current_user)) -> JSONResponse:
     group_ids: list = get_group_ids_from_string(group_ids_str=groups_to_hide)
@@ -105,3 +90,24 @@ async def show_groups_in_feed(groups_to_show: str, user: Users = Depends(get_act
     return JSONResponse(
         {'shown_group_id': group_ids}
     )
+
+@cache(expire=900, namespace=GROUPS_CACHE_NAMESPACE)
+async def get_all_groups_to_render(user: Users = Depends(get_active_current_user)) -> list[ImagePostsGroupSchema]:
+    group_models = await GroupService.get_groups_with_images()
+    return GroupDTO.many_models_to_schemas(group_models)
+
+
+@cache(expire=900, namespace=GROUPS_CACHE_NAMESPACE)
+async def get_hidden_groups_to_render(user: Users = Depends(get_active_current_user)) -> list[ImagePostsGroupSchema]:
+    group_models = await GroupService.get_groups_with_images(get_hidden=True)
+    return GroupDTO.many_models_to_schemas(group_models)
+
+
+async def hide_group_from_feed(group_id: int, user: Users = Depends(get_active_current_user)) -> None:
+    await get_and_check_group_for_presence(group_id=group_id, user=user)
+    await GroupService.update(Groups.id == group_id, is_hidden=True)
+
+
+async def show_group_in_feed(group_id: int, user: Users = Depends(get_active_current_user)) -> None:
+    await get_and_check_group_for_presence(group_id=group_id, user=user)
+    await GroupService.update(Groups.id == group_id, is_hidden=False)
