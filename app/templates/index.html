@@ -5,9 +5,9 @@
             <div class="container my-5">
                 <div class="row infinite-container">
                     {% if posts|length == 0 %}
-                        <div class="info">
-                            <p>Нет сохранённых постов. Возможно, вы либо убрали все группы из ленты, либо не подписаны ни на одну группу.</p>
-                        </div>
+                        <p align="center">
+                            Нет сохранённых постов. Возможно, вы либо убрали все группы из ленты, либо не подписаны ни на одну группу.
+                        </p>
                     {% else %}
                      {% for post in posts %}
                        <div class="col-md-6 infinite-item">
