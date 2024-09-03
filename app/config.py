@@ -1,4 +1,3 @@
-from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from enum import IntEnum
 
@@ -49,6 +48,7 @@ class RedisSettings(BaseSettings):
 
 
 class Settings(BaseSettings):
+    
     db: DBSettings = DBSettings()
     vk: VKSettings = VKSettings()
     auth: AuthSettings = AuthSettings()
