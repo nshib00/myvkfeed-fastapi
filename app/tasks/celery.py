@@ -15,6 +15,6 @@ celery_app = Celery(
 celery_app.conf.beat_schedule = {
     'clear_expired_refresh_tokens': {
         'task': 'clear_expired_refresh_tokens',
-        'schedule': timedelta(minutes=1) # crontab(hour='0', minute='0'),
+        'schedule': crontab(hour='0', minute='0'),
     },
 }
