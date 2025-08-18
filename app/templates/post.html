@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ post.group_title }}</h5>
+                    <h6 class="card-subtitle mb-3 text-muted">{{ post.pub_date|format_datetime }}</h6>
+                    <p class="card-text">{{ post.text }}</p>
+                    {% if post.images|length > 0 %}
+                        {% set post_images_count = post.images|length %}
+                        <div class="post-imgs-container mt-3 mb-2">
+                            {% for image in post.images %}
+                                {% set optimal_img_url = image|choose_optimal(images_in_post=post_images_count) %}
+                                <a href="{{ optimal_img_url }}">
+                                    <img src="/images/proxy/?url={{ optimal_img_url|urlencode }}" 
+                                         alt="Картинка #{{ image.id }}" 
+                                         class="post-img-uniform">
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

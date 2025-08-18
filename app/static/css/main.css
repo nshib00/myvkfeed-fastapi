@@ -1,15 +1,30 @@
 html {
-    background-color: #252525;
-    color: #c0c0c0;
+    background-color: #ffffff;
+    color: #252525;
     font-size: 110%;
 }
 
-header, footer {
-    background-color: #202020;
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: #252525;
+    color: #f8f9fa;
 }
 
-a, footer p {
-    color: #c7c7c7;
+footer {
+    background-color: #f8f9fa;
+    color: #252525;
+}
+
+body {
+    margin-top: 90px;
+}
+
+a {
+    color: #495057;
     text-decoration: none;
 }
 
@@ -21,7 +36,7 @@ footer p {
 }
 
 a:hover {
-    color: #ebebeb;
+    color: #212529;
 }
 
 .logo {
