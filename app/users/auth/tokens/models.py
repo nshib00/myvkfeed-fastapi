@@ -8,3 +8,4 @@ class RefreshTokens(Base):
     id = Column(UUID, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     token = Column(String, nullable=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False)

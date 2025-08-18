@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel
 
 
@@ -8,4 +9,5 @@ REFRESH_TOKEN_TYPE = 'refresh'
 class TokenInfo(BaseModel):
     access_token: str
     refresh_token: str
+    refresh_token_expires_at: datetime
     type: str = 'Bearer'
