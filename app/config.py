@@ -1,5 +1,9 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from enum import IntEnum
+from dotenv import find_dotenv, load_dotenv
+
+load_dotenv(find_dotenv())
 
 
 class PostLimit(IntEnum):
@@ -10,14 +14,27 @@ class PostLimit(IntEnum):
     VERY_LARGE = 5000
 
 
-class VKSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix='VK_')
+class BaseAppSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file="../.env",
+        env_file_encoding="utf-8"
+    )
+
+
+class VKSettings(BaseAppSettings):
+    model_config = {
+        **BaseAppSettings.model_config,
+        'env_prefix': 'VK_'
+    }
 
     API_TOKEN: str
     
 
-class DBSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix='DB_')
+class DBSettings(BaseAppSettings):
+    model_config = {
+        **BaseAppSettings.model_config,
+        'env_prefix': 'DB_'
+    }
 
     HOST: str
     PORT: int
@@ -30,21 +47,28 @@ class DBSettings(BaseSettings):
         return f'postgresql+asyncpg://{self.USER}:{self.PWD}@{self.HOST}:{self.PORT}/{self.NAME}'
 
 
-class AppSettings(BaseSettings):
+class AppSettings(BaseAppSettings):
     posts_limit: IntEnum = PostLimit.MEDIUM
 
 
-class AuthSettings(BaseSettings):
+class AuthSettings(BaseAppSettings):
     SECRET_KEY: str | None = None
     ALGORITHM: str | None = None
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 60
 
 
-class RedisSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix='REDIS_')
+class RedisSettings(BaseAppSettings):
+    model_config = {
+        **BaseAppSettings.model_config,
+        'env_prefix': 'REDIS_'
+    }
 
     URL: str | None = None
+
+
+class CelerySettings(BaseAppSettings):
+    broker_url: str = Field(..., alias='CELERY_BROKER_URL')
 
 
 class Settings(BaseSettings):
@@ -54,9 +78,7 @@ class Settings(BaseSettings):
     auth: AuthSettings = AuthSettings()
     app: AppSettings = AppSettings()
     redis: RedisSettings = RedisSettings()
+    celery: CelerySettings = CelerySettings()
     
-    class Config:
-        env_file = '../.env'
-
 
 settings = Settings()
