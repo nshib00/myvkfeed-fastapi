@@ -21,6 +21,24 @@ class BaseAppSettings(BaseSettings):
     )
 
 
+class TestSettings(BaseAppSettings):
+    model_config = {
+        **BaseAppSettings.model_config,
+        'env_file': '../.env.test',
+        'env_prefix': 'TEST'
+    }
+
+    DB_HOST: str
+    DB_PORT: int
+    DB_USER: str
+    DB_PWD: str
+    DB_NAME: str
+
+    @property
+    def db_url(self):
+        return f'postgresql+asyncpg://{self.DB_USER}:{self.DB_PWD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}'
+
+
 class VKSettings(BaseAppSettings):
     model_config = {
         **BaseAppSettings.model_config,
@@ -43,7 +61,7 @@ class DBSettings(BaseAppSettings):
     NAME: str
 
     @property
-    def URL(self):
+    def url(self):
         return f'postgresql+asyncpg://{self.USER}:{self.PWD}@{self.HOST}:{self.PORT}/{self.NAME}'
 
 
@@ -72,6 +90,7 @@ class CelerySettings(BaseAppSettings):
 
 
 class Settings(BaseSettings):
+    mode: str = Field(..., alias='MODE')
     
     db: DBSettings = DBSettings()
     vk: VKSettings = VKSettings()
@@ -82,3 +101,4 @@ class Settings(BaseSettings):
     
 
 settings = Settings()
+test_settings = TestSettings()
