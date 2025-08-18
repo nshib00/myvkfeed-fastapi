@@ -3,29 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ title }}</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{{ url_for('static', path='css/bootstrap.min.css') }}">
+    <script src="{{ url_for('static', path='js/bootstrap.bundle.min.js') }}"></script>
+
     <link rel="stylesheet" href="{{ url_for('static', path='/css/main.css') }}" type="text/css"/>
     <link rel="shortcut icon" href="{{ url_for('static', path='/images/favicon.png') }}" type="image/png"/>
 </head>
-<header>
-    <span class="menu-container">
-    <div class="topmenu">
-        {% block menu %}
-        <div class="logo" valign="top">
-             <a href="/pages">
+<header class="topmenu">
+    <div class="topmenu-left d-flex align-items-center">
+        <div class="logo">
+            <a href="/pages">
                 <img src="{{ url_for('static', path='/images/app_logo.png') }}" alt="MyVkFeed">
-             </a>
+            </a>
         </div>
-            {% for item in menu %}
-                <span class="topmenu-item" valign="top">
-                    <a class="topmenu-item-ref" href="{{ item.url }}">{{ item.title }}</a>
-                </span>
-            {% endfor %}
+
+        {% for item in menu %}
+            <a class="topmenu-item-ref" href="{{ item.url }}">{{ item.title }}</a>
+        {% endfor %}
     </div>
-    <span class="topmenu-item right">
-        <p><a class="logout-ref" href="">{{ user.name }} | Выйти</a></p>
-    </span>
-    {% endblock menu %}
-    </span>
+
+    <div class="topmenu-right">
+        <a class="logout-ref" href="">
+            {{ user.name }} | Выйти
+        </a>
+    </div>
 </header>
 <body>
     {% block content %}
@@ -35,11 +38,8 @@
     {% endblock %}
 </body>
 {% block footer %}
-{% endblock %}
-
-{% block app_info %}
-<div class="app-name">
-    <p>MyVkFeed v{{ version }} by nshib<br>{{ year }}</br>
-</div>
+<footer class="app-footer">
+    <p>MyVkFeed v{{ version }} by nshib<br>{{ year }}</p>
+</footer>
 {% endblock %}
 </html>
