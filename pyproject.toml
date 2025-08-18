@@ -21,6 +21,15 @@ passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 toml = "^0.10.2"
 certifi = "^2024.7.4"
 fastapi-cache2 = {extras = ["redis"], version = "^0.2.2"}
+celery = "^5.4.0"
+fastapi-admin = "^1.0.4"
+fastapi-amis-admin = "^0.7.2"
+fastapi-user-auth = "^0.7.3"
+sqladmin = "^0.18.0"
+itsdangerous = "^2.2.0"
+flower = "^2.0.1"
+h11 = "0.16.0"
+python-multipart = "0.0.20"
 
 
 [tool.poetry.group.dev.dependencies]
