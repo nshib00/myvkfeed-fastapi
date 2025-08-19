@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Andrew Smith",
+        "vk_shortname": "joseph",
+        "hashed_password": "dd8eb601227a90a08d05141b5160e7fc90c48f387de71eb7cf96a81206aef641",
+        "date_joined": "1995-10-19 07:53:33",
+        "is_active": true,
+        "is_admin": false
+    },
+    {
+        "name": "Nicolas Randall",
+        "vk_shortname": "angela",
+        "hashed_password": "eebac76f86848452847a07b0d04a8d8deaa1a0322df96dd49b1464bab05528d0",
+        "date_joined": "1976-03-16 14:00:04",
+        "is_active": true,
+        "is_admin": false
+    },
+    {
+        "name": "Daniel Davis",
+        "vk_shortname": "sarah",
+        "hashed_password": "68008ae685eb1c4de8513614c0c86bf0f995fea4e41bed63c0064eb6df5f904f",
+        "date_joined": "1996-01-25 05:17:06",
+        "is_active": true,
+        "is_admin": false
+    },
+    {
+        "name": "Scott Yates",
+        "vk_shortname": "adriana",
+        "hashed_password": "288fe18d57dcc7b9ac9af6d6930792046c552927f1cc3e6bcfbfd5b6f965ee01",
+        "date_joined": "2015-07-09 22:37:09",
+        "is_active": true,
+        "is_admin": false
+    },
+    {
+        "name": "Luis Torres",
+        "vk_shortname": "jerry",
+        "hashed_password": "83cf74ef81085d458e50bf402a226e761dbc46a007e9491e460c96b0435be481",
+        "date_joined": "2009-11-12 13:32:25",
+        "is_active": true,
+        "is_admin": true
+    }
+]
