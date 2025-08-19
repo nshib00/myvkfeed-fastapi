@@ -5,3 +5,6 @@ __pycache__
 
 # Celery Beat
 celerybeat-schedule*
+
+# test data json
+app/tests/data/fake_*.json
