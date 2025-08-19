@@ -24,8 +24,7 @@ class BaseAppSettings(BaseSettings):
 class TestSettings(BaseAppSettings):
     model_config = {
         **BaseAppSettings.model_config,
-        'env_file': '../.env.test',
-        'env_prefix': 'TEST'
+        'env_prefix': 'TEST_'
     }
 
     DB_HOST: str
