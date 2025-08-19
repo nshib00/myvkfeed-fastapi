@@ -1,5 +1,6 @@
 import asyncio
-from httpx import AsyncClient
+from faker import Faker
+from httpx import ASGITransport, AsyncClient
 import pytest
 from sqlalchemy import insert
 from datetime import datetime
@@ -55,5 +56,87 @@ async def prepare_database():
 async def client():
     async with AsyncClient(app=fastapi_app, base_url='http://test') as cli:
         yield cli 
+
+
+@pytest.fixture(scope='session')
+async def faker():
+    return Faker()
+
+
+@pytest.fixture(scope='session')
+async def test_user(faker):
+    async with async_sessionmaker() as session:
+        new_user = Users(
+            name='test_user',
+            vk_shortname='test',
+            hashed_password=faker.sha256(),
+            date_joined=faker.date_time(),
+            is_active=True,
+            is_admin=False,
+        )
+        session.add(new_user)
+        await session.commit()
+        await session.refresh(new_user)
+    return new_user
+
+
+@pytest.fixture(scope='session')
+async def authenticated_client(test_user):
+    async with AsyncClient(
+        transport=ASGITransport(app=fastapi_app),
+        base_url='http://test',
+    ) as ac:
+        await ac.post(
+            url='/auth/login',
+            json={
+                'name': test_user.name,
+                'password': test_user.password,
+            }
+        )  
+        assert ac.cookies.get('booking_access_token') is not None
+        yield ac 
+
+
+@pytest.fixture(scope='session')
+async def groups(test_user):
+    groups_data = [
+        Groups(source_id=1001, title="Group 1", user_id=test_user.id),
+        Groups(source_id=1002, title="Group 2", user_id=test_user.id),
+        Groups(source_id=1003, title="Hidden group 1", user_id=test_user.id, is_hidden=True),
+        Groups(source_id=1004, title="Hidden group 2", user_id=test_user.id, is_hidden=True),
+    ]
+    async with async_sessionmaker() as session:
+        session.add_all(groups_data)
+        await session.commit()
+        for g in groups_data:
+            await session.refresh(g)
+    return groups_data
+
+
+@pytest.fixture(scope='session')
+async def group_images(groups):
+    async with async_sessionmaker() as session:
+        for group in groups:
+            group_image = GroupImages(
+                url=f"https://example.com/group-image-{group.id}.jpg",
+                group_id=group.id,
+            )
+            session.add(group_image)
+            await session.commit()
+            await session.refresh(group_image)
+        return group_image
+
+
+# @pytest.fixture(scope='session')
+# async def post_image_fixture(post):
+#     async with async_sessionmaker() as session:
+#         post_image = PostImages(
+#             urls=["https://example.com/post-image1.jpg", "https://example.com/post-image2.jpg"],
+#             post_id=post.id,
+#         )
+#         session.add(post_image)
+#         await session.commit()
+#         await session.refresh(post_image)
+#         return post_image
 
 
