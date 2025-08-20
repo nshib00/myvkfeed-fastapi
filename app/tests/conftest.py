@@ -1,5 +1,7 @@
 import asyncio
 from faker import Faker
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.inmemory import InMemoryBackend
 from httpx import ASGITransport, AsyncClient
 import pytest
 from sqlalchemy import insert
@@ -10,6 +12,7 @@ from app.config import settings
 from app.tests.data.faker import dump_fake_data, load_fake_data
 from app.main import app as fastapi_app
 
+from app.users.auth.password_hash import HashPassword
 from app.users.models import Users
 from app.groups.models import Groups
 from app.posts.models import Posts
@@ -33,23 +36,10 @@ async def prepare_database():
 
     dump_fake_data()
 
-    fake_users = load_fake_data('users')
-    fake_groups = load_fake_data('groups')
-    fake_posts = load_fake_data('posts')
 
-    for user in fake_users:
-        user['date_joined'] = datetime.strptime(user['date_joined'], '%Y-%m-%d %H:%M:%S')
-    for post in fake_posts:
-        post['pub_date'] = datetime.strptime(post['pub_date'], '%Y-%m-%d %H:%M:%S') 
-
-
-    async with async_sessionmaker() as session:
-        users_insert = insert(Users).values(fake_users)
-        posts_insert = insert(Posts).values(fake_posts)
-        groups_insert = insert(Groups).values(fake_groups)
-        for query in (users_insert, posts_insert, groups_insert):
-            await session.execute(query)
-        await session.commit()
+@pytest.fixture(autouse=True, scope="session")
+def init_cache():
+    FastAPICache.init(InMemoryBackend(), prefix="test-cache")
 
 
 @pytest.fixture(scope='function')
@@ -58,18 +48,19 @@ async def client():
         yield cli 
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 async def faker():
     return Faker()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 async def test_user(faker):
+    raw_password = 'password_test'
     async with async_sessionmaker() as session:
         new_user = Users(
-            name='test_user',
-            vk_shortname='test',
-            hashed_password=faker.sha256(),
+            name=f'test_user_{faker.unique.user_name()}',
+            vk_shortname=f'short_{faker.unique.user_name()}',
+            hashed_password=HashPassword.get_password_hash(raw_password),
             date_joined=faker.date_time(),
             is_active=True,
             is_admin=False,
@@ -77,33 +68,67 @@ async def test_user(faker):
         session.add(new_user)
         await session.commit()
         await session.refresh(new_user)
-    return new_user
+    return new_user, raw_password
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 async def authenticated_client(test_user):
+    user, raw_password = test_user
     async with AsyncClient(
         transport=ASGITransport(app=fastapi_app),
-        base_url='http://test',
+        base_url="http://test",
     ) as ac:
-        await ac.post(
-            url='/auth/login',
+        resp = await ac.post(
+            url="/auth/login",
             json={
-                'name': test_user.name,
-                'password': test_user.password,
-            }
-        )  
-        assert ac.cookies.get('booking_access_token') is not None
-        yield ac 
+                "name": user.name,
+                "password": raw_password,
+            },
+        )
+        assert resp.status_code == 200
+        assert ac.cookies.get("myvkfeed_access_token") is not None
+        yield ac
 
 
-@pytest.fixture(scope='session')
-async def groups(test_user):
+@pytest.fixture(scope='function')
+async def admin_user(faker):
+    raw_password = "admin_password"
+    async with async_sessionmaker() as session:
+        new_user = Users(
+            name="admin_user",
+            vk_shortname="admin_vk",
+            hashed_password=HashPassword.get_password_hash(raw_password),
+            is_active=True,
+            is_admin=True,
+            date_joined=faker.date_time()
+        )
+        session.add(new_user)
+        await session.commit()
+        await session.refresh(new_user)
+    return new_user, raw_password
+
+
+@pytest.fixture(scope='function')
+async def admin_client(admin_user):
+    user, password = admin_user
+    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+        resp = await ac.post(
+            "/auth/login",
+            json={"name": user.name, "password": password}
+        )
+        assert resp.status_code == 200
+        assert ac.cookies.get("myvkfeed_access_token") is not None
+        yield ac
+
+
+@pytest.fixture(scope='function')
+async def groups(test_user, faker):
+    user, _ = test_user
     groups_data = [
-        Groups(source_id=1001, title="Group 1", user_id=test_user.id),
-        Groups(source_id=1002, title="Group 2", user_id=test_user.id),
-        Groups(source_id=1003, title="Hidden group 1", user_id=test_user.id, is_hidden=True),
-        Groups(source_id=1004, title="Hidden group 2", user_id=test_user.id, is_hidden=True),
+        Groups(source_id=faker.unique.random_int(min=2000, max=9999), title="Group 1", user_id=user.id),
+        Groups(source_id=faker.unique.random_int(min=2000, max=9999), title="Group 2", user_id=user.id),
+        Groups(source_id=faker.unique.random_int(min=2000, max=9999), title="Hidden group 1", user_id=user.id, is_hidden=True),
+        Groups(source_id=faker.unique.random_int(min=2000, max=9999), title="Hidden group 2", user_id=user.id, is_hidden=True),
     ]
     async with async_sessionmaker() as session:
         session.add_all(groups_data)
@@ -113,8 +138,9 @@ async def groups(test_user):
     return groups_data
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 async def group_images(groups):
+    images = []
     async with async_sessionmaker() as session:
         for group in groups:
             group_image = GroupImages(
@@ -124,19 +150,38 @@ async def group_images(groups):
             session.add(group_image)
             await session.commit()
             await session.refresh(group_image)
-        return group_image
+            images.append(group_image)
+    return images
 
 
-# @pytest.fixture(scope='session')
-# async def post_image_fixture(post):
-#     async with async_sessionmaker() as session:
-#         post_image = PostImages(
-#             urls=["https://example.com/post-image1.jpg", "https://example.com/post-image2.jpg"],
-#             post_id=post.id,
-#         )
-#         session.add(post_image)
-#         await session.commit()
-#         await session.refresh(post_image)
-#         return post_image
+@pytest.fixture(scope='function')
+async def test_post_with_image(groups, faker):
+    post = Posts(
+        pub_date=datetime.now(),
+        vk_id=faker.unique.random_int(min=1000, max=9999),
+        text="Post with image",
+        group_id=groups[0].id,
+    )
+    image = PostImages(urls=["http://example.com/1.jpg"], post=post)
+
+    async with async_sessionmaker() as session:
+        session.add_all([post, image])
+        await session.commit()
+
+    return post
 
 
+@pytest.fixture(scope='function')
+async def posts(groups):
+    posts_data = [
+        Posts(
+            pub_date=datetime.now(),
+            vk_id=200+i,
+            text=f"Some post #{i}",
+            group_id=groups[0].id,
+        ) for i in range(1, 6)
+    ]
+    async with async_sessionmaker() as session:
+        session.add_all(posts_data)
+        await session.commit()
+    return posts_data

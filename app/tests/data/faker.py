@@ -59,7 +59,10 @@ def dump_fake_data(users_count=5, posts_count=10, groups_count=10):
             json.dump(fake_obj, file, ensure_ascii=False, indent=4)
 
 
-def load_fake_data(model: str):
+def load_fake_data(model: str, count: int | None = None):
     data_dir_path = get_data_dir_path()
     with open(data_dir_path / f'fake_{model}.json') as file:
-        return json.load(file)
+        fake_data = json.load(file)
+    if count is None:
+        return fake_data
+    return fake_data[:count]
