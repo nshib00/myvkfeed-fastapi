@@ -13,7 +13,7 @@ class PostService(BaseService):
 
 
     @classmethod
-    async def find_non_existing_posts(cls, posts_list: list[PostSchema]) -> list[PostSchema]:
+    async def find_non_existing_posts(cls, posts_list: list[Posts]) -> list[PostSchema]:
         non_existing_posts = []
         async with async_sessionmaker() as session:
             for post in posts_list:
