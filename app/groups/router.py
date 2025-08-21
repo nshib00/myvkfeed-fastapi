@@ -87,7 +87,7 @@ async def hide_groups_from_feed(groups_to_hide: str, user: Users = Depends(get_a
 async def show_groups_in_feed(groups_to_show: str, user: Users = Depends(get_active_current_user)) -> JSONResponse:
     group_ids: list = get_group_ids_from_string(group_ids_str=groups_to_show)
     for group_id in group_ids:
-        await show_group_in_feed(group_id=group_id, user_id=user.id)
+        await show_group_in_feed(group_id=group_id, user=user)
     return JSONResponse(
         {'shown_group_id': group_ids}
     )

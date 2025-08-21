@@ -70,7 +70,7 @@ class GroupNotExistsException(BaseNotFoundException):
     detail = 'Group not exists.'
 
 
-class GroupNotFoundInUserGroupsException(BaseBadRequestException):
+class GroupNotFoundInUserGroupsException(BaseNotFoundException):
     detail = 'Incorrect group ID(s): group(s) not found in user groups list.'
 
 
