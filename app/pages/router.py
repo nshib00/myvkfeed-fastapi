@@ -14,6 +14,7 @@ from app.posts.schemas import PostResponseRenderSchema
 from app.users.auth.dependencies import get_active_current_user
 from app.users.models import Users
 from app import __version__
+from datetime import datetime
 
 
 router = APIRouter(
@@ -32,7 +33,7 @@ base_context = {
         {'title': 'Мои группы', 'url': '/pages/groups'},
     ],
     'version': __version__,
-    'year': '2024',
+    'year': datetime.now().year,
 }
 
 
