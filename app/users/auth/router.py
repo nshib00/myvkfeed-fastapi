@@ -4,6 +4,7 @@ from app.exceptions import UserAlreadyExistsException
 from app.users.auth.dependencies import get_active_current_user
 from app.users.auth.logic import authenticate_user, create_and_save_tokens
 from app.users.auth.password_hash import HashPassword
+from app.users.auth.tokens.schemas import TokenInfoSchema
 from app.users.auth.tokens.service import RefreshTokenService
 from app.users.auth.tokens.token_info import TokenInfo
 from app.users.models import Users
@@ -30,14 +31,14 @@ async def register_user(user_data: UserRegisterSchema) -> dict[str, int]:
 
 
 @router.post('/refresh')
-async def refresh_tokens(response: Response, user: Users = Depends(get_active_current_user)) -> TokenInfo:
+async def refresh_tokens(response: Response, user: Users = Depends(get_active_current_user)) -> TokenInfoSchema:
     await RefreshTokenService.delete(token_user_id=user.id) # deleting old refresh tokens of current user
     tokens = await create_and_save_tokens(response, user)
     return tokens
 
 
 @router.post('/login')
-async def login_user(response: Response, user_data: UserLoginSchema) -> TokenInfo:
+async def login_user(response: Response, user_data: UserLoginSchema) -> TokenInfoSchema:
     user = await authenticate_user(username=user_data.name, password=user_data.password)
     tokens = await create_and_save_tokens(response, user)
     return tokens
