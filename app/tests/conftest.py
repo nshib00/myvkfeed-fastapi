@@ -44,8 +44,8 @@ def init_cache():
 
 @pytest.fixture(scope='function')
 async def client():
-    async with AsyncClient(app=fastapi_app, base_url='http://test') as cli:
-        yield cli 
+    async with AsyncClient(transport=ASGITransport(app=fastapi_app), base_url='http://test') as cli:
+        yield cli
 
 
 @pytest.fixture(scope='function')
@@ -111,7 +111,7 @@ async def admin_user(faker):
 @pytest.fixture(scope='function')
 async def admin_client(admin_user):
     user, password = admin_user
-    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=fastapi_app), base_url='http://test') as ac:
         resp = await ac.post(
             "/auth/login",
             json={"name": user.name, "password": password}
@@ -172,11 +172,11 @@ async def test_post_with_image(groups, faker):
 
 
 @pytest.fixture(scope='function')
-async def posts(groups):
+async def posts(groups, faker):
     posts_data = [
         Posts(
             pub_date=datetime.now(),
-            vk_id=200+i,
+            vk_id=faker.unique.random_int(min=1000, max=9999),
             text=f"Some post #{i}",
             group_id=groups[0].id,
         ) for i in range(1, 6)
@@ -185,3 +185,4 @@ async def posts(groups):
         session.add_all(posts_data)
         await session.commit()
     return posts_data
+
