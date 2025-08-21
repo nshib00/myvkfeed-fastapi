@@ -24,6 +24,7 @@ class Groups(Base):
         lazy='selectin',
         cascade='all, delete',
     )
+    user = relationship('Users', back_populates='groups')
 
     def __repr__(self):
         return f'<Group "{self.title}">'

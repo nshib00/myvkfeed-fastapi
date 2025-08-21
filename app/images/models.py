@@ -2,7 +2,6 @@ from sqlalchemy import JSON, Column, ForeignKey, Integer
 from sqlalchemy_utils.types.url import URLType
 from sqlalchemy.orm import relationship
 from app.database import Base
-from app.posts.models import Posts
 
 
 class BaseImages:

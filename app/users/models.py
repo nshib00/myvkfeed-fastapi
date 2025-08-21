@@ -1,5 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
+from sqlalchemy.orm import relationship
+
 from app.database import Base
 
 
@@ -14,6 +16,8 @@ class Users(Base):
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
 
+    groups = relationship('Groups', back_populates='user')
+
     def __repr__(self):
-        return f'User #{self.id}'
+        return self.name
     
