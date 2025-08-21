@@ -14,7 +14,10 @@ class GroupDTO:
             is_hidden=False, 
             user_id=user_id,
         )
-        group_model.group_image = GroupImages(url=group_dict['photo_50'])
+        if group_dict.get('photo_50'):
+            group_model.group_image = GroupImages(url=group_dict['photo_50'])
+        else:
+            group_model.group_image = None 
         return group_model
 
     @classmethod
@@ -28,6 +31,7 @@ class GroupDTO:
 
     @classmethod
     def one_model_to_schema(cls, group_model: Groups) -> GroupSchema:
+        # validated_group_model = GroupSchema.model_validate(group_model)
         return GroupSchema(
             id=group_model.id,
             title=group_model.title,
@@ -46,6 +50,7 @@ class GroupDTO:
     
     @classmethod
     def one_model_to_render_schema(cls, group_model: Groups) -> GroupRenderSchema:
+        # validated_group_model = GroupSchema.model_validate(group_model)
         return GroupRenderSchema(
         id=group_model.id,
         title=group_model.title,
@@ -53,7 +58,7 @@ class GroupDTO:
         is_hidden=group_model.is_hidden,
         user_id=group_model.user_id,
         image=ImageResponseSchema(
-            url=group_model.group_image.url
+            urls={'default': group_model.group_image.url}
         ),
         posts=[
             PostResponseSchemaWithImages(
@@ -61,7 +66,7 @@ class GroupDTO:
                 pub_date=post.pub_date,
                 text=post.text,
                 images=[
-                    ImageResponseSchema(url=img.url) for img in post.images
+                    ImageResponseSchema(urls=img.urls) for img in post.images
                 ]
              ) for post in group_model.posts
         ],
